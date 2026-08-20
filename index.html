@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Year-End Closing &amp; Reporting Calendar — WVI FY2026</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --wvi-orange: #E87722; --wvi-orange-light: #FDF0E6;
+    --wvi-blue: #003399; --wvi-blue-light: #E6ECFF;
+    --bg: #F7F5F2; --surface: #FFFFFF; --surface2: #F0EDE8;
+    --border: rgba(0,0,0,0.08); --border-strong: rgba(0,0,0,0.14);
+    --text-primary: #1A1814; --text-secondary: #6B6760; --text-tertiary: #9E9B96;
+    --green: #1D9E75; --green-light: #E1F5EE;
+    --amber: #B87915; --amber-light: #FDF3DC;
+    --red: #C0392B; --red-light: #FDECEA;
+    --radius: 10px; --radius-lg: 14px;
+  }
+  html { font-size: 15px; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text-primary); min-height: 100vh; padding: 2rem 1.5rem 4rem; }
+  .page { max-width: 1120px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem; }
+  .header-left { display: flex; align-items: center; gap: 14px; }
+  .logo { width: 48px; height: 48px; background: var(--wvi-orange); border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .logo svg { width: 26px; height: 26px; fill: none; stroke: #fff; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .org-name { font-size: 11px; font-weight: 500; color: var(--text-tertiary); letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 3px; }
+  .page-title { font-size: 20px; font-weight: 600; color: var(--text-primary); }
+  .badge-fy { background: var(--wvi-blue-light); color: var(--wvi-blue); font-size: 11px; font-weight: 500; padding: 5px 10px; border-radius: 99px; white-space: nowrap; margin-top: 4px; display: inline-block; letter-spacing: 0.03em; }
+  .header-right { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .print-btn { background: var(--surface); border: 1px solid var(--border-strong); color: var(--text-secondary); font-family: 'DM Sans', sans-serif; font-size: 13px; padding: 7px 16px; border-radius: var(--radius); cursor: pointer; display: flex; align-items: center; gap: 6px; }
+  .print-btn:hover { background: var(--surface2); }
+
+  .countdown-banner { background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--wvi-orange); border-radius: var(--radius); padding: 10px 16px; margin-bottom: 1.25rem; display: flex; align-items: center; gap: 12px; font-size: 13px; }
+  .countdown-text { color: var(--text-primary); font-weight: 500; }
+  .countdown-sub { color: var(--text-secondary); font-size: 12px; margin-top: 2px; }
+
+  .metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 1.25rem; }
+  .metric-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1.1rem 1.25rem; cursor: pointer; transition: border-color 0.15s, box-shadow 0.15s, transform 0.15s; position: relative; }
+  .metric-card:hover { border-color: var(--border-strong); box-shadow: 0 2px 8px rgba(0,0,0,0.06); transform: translateY(-1px); }
+  .metric-card.metric-active { border-color: var(--wvi-orange); box-shadow: 0 0 0 1px var(--wvi-orange); }
+  .metric-card::after { content: '\2193 View tasks'; position: absolute; bottom: 8px; right: 12px; font-size: 9px; color: var(--text-tertiary); opacity: 0; transition: opacity 0.15s; letter-spacing: 0.03em; }
+  .metric-card:hover::after { opacity: 1; }
+  .metric-label { font-size: 11px; font-weight: 500; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px; }
+  .metric-value { font-size: 28px; font-weight: 600; line-height: 1; margin-bottom: 8px; }
+  .metric-sub { font-size: 11px; color: var(--text-tertiary); }
+  .prog-bar { height: 4px; background: var(--border); border-radius: 99px; margin-top: 8px; }
+  .prog-fill { height: 4px; border-radius: 99px; }
+
+  .charts-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 1.25rem; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1.25rem; }
+  .card-title { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-tertiary); margin-bottom: 1rem; }
+  .owner-row { display: flex; align-items: center; gap: 10px; margin-bottom: 7px; cursor: pointer; border-radius: 6px; padding: 2px 4px; margin-left: -4px; }
+  .owner-row:hover { background: var(--surface2); }
+  .owner-name { min-width: 150px; color: var(--text-secondary); font-family: 'DM Mono', monospace; font-size: 10.5px; }
+  .owner-bar-bg { flex: 1; height: 6px; background: var(--surface2); border-radius: 99px; }
+  .owner-bar { height: 6px; border-radius: 99px; }
+  .owner-count { min-width: 22px; text-align: right; font-weight: 600; font-size: 12px; color: var(--text-primary); }
+
+  .filter-bar { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 12px 16px; margin-bottom: 1rem; display: flex; gap: 20px; flex-wrap: wrap; align-items: flex-start; }
+  .filter-group { display: flex; flex-direction: column; gap: 6px; }
+  .filter-group-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-tertiary); }
+  .filter-pills { display: flex; gap: 6px; flex-wrap: wrap; max-width: 100%; }
+  .filter-btn { font-size: 12px; font-family: 'DM Sans', sans-serif; padding: 4px 12px; border-radius: 99px; border: 1px solid var(--border-strong); background: var(--surface); color: var(--text-secondary); cursor: pointer; transition: all 0.15s; white-space: nowrap; display: inline-flex; align-items: center; gap: 5px; }
+  .filter-btn:hover { background: var(--surface2); }
+  .filter-btn.active { background: var(--wvi-orange); border-color: var(--wvi-orange); color: #fff; }
+
+  .timeline-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; }
+  .col-header { display: grid; grid-template-columns: 12px 1fr 150px 110px 130px 96px; gap: 10px; padding: 10px 16px; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-tertiary); background: var(--surface2); border-bottom: 1px solid var(--border); }
+  .day-group { border-bottom: 1px solid var(--border); }
+  .day-group:last-child { border-bottom: none; }
+  .day-header { display: flex; align-items: center; gap: 8px; padding: 9px 16px; background: var(--surface2); font-size: 11px; font-weight: 600; color: var(--text-secondary); letter-spacing: 0.03em; cursor: pointer; user-select: none; border-bottom: 1px solid var(--border); }
+  .day-header:hover { background: #E6E2DC; }
+  .day-header.today-header { background: #FDF0E6; border-left: 3px solid var(--wvi-orange); }
+  .day-count { color: var(--text-tertiary); font-weight: 500; }
+  .today-badge { font-size: 10px; font-weight: 600; background: var(--wvi-orange); color: #fff; padding: 2px 8px; border-radius: 99px; }
+  .day-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .chevron { margin-left: auto; color: var(--text-tertiary); font-size: 11px; transition: transform 0.2s; }
+  .chevron.open { transform: rotate(180deg); }
+  .day-body.collapsed { display: none; }
+  .task-row { display: grid; grid-template-columns: 12px 1fr 150px 110px 130px 96px; gap: 10px; align-items: start; padding: 8px 16px; border-bottom: 1px solid var(--border); transition: background 0.1s; }
+  .task-row:last-child { border-bottom: none; }
+  .task-row:hover { background: #FAFAF8; }
+  .task-row.key-task { border-left: 3px solid var(--wvi-orange); background: #FFFAF6; }
+  .task-row.key-task:hover { background: var(--wvi-orange-light); }
+  .task-row.key-task .task-name { font-weight: 600; }
+  .status-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; margin-top: 5px; }
+  .dot-done { background: var(--green); }
+  .dot-prog { background: var(--wvi-orange); }
+  .dot-pend { background: #D3D1C7; }
+  .task-name { font-size: 12.5px; color: var(--text-primary); line-height: 1.4; }
+  .task-tags { margin-top: 4px; display: flex; gap: 5px; flex-wrap: wrap; }
+  .sec-tag { font-size: 9.5px; font-weight: 500; padding: 1px 7px; border-radius: 99px; white-space: nowrap; letter-spacing: 0.02em; }
+  .task-owner { font-size: 11px; font-family: 'DM Mono', monospace; color: var(--text-secondary); text-align: right; padding-top: 2px; }
+  .task-due { font-size: 11px; color: var(--text-secondary); text-align: right; padding-top: 2px; font-family: 'DM Mono', monospace; }
+  .task-cut { font-size: 11px; color: var(--text-tertiary); text-align: right; padding-top: 2px; }
+  .badge { font-size: 10px; font-weight: 500; padding: 3px 9px; border-radius: 99px; text-align: center; white-space: nowrap; }
+  .badge-done { background: var(--green-light); color: #0A5C44; }
+  .badge-prog { background: var(--amber-light); color: var(--amber); }
+  .badge-pend { background: var(--surface2); color: var(--text-tertiary); }
+  .empty-state { padding: 2rem; text-align: center; color: var(--text-tertiary); font-size: 13px; }
+  .footer { margin-top: 2.5rem; text-align: center; font-size: 11px; color: var(--text-tertiary); }
+
+  @media (max-width: 760px) {
+    .metrics { grid-template-columns: 1fr 1fr; }
+    .charts-row { grid-template-columns: 1fr; }
+    .col-header, .task-row { grid-template-columns: 12px 1fr 90px; }
+    .task-owner, .task-due, .task-cut { display: none; }
+  }
+  @media print {
+    body { background: #fff; padding: 1rem; }
+    .print-btn, .filter-bar { display: none; }
+    .day-body.collapsed { display: block !important; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header class="page-header">
+    <div class="header-left">
+      <div class="logo">
+        <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="8" y1="14" x2="8" y2="14" stroke-width="2.5"/><line x1="12" y1="14" x2="12" y2="14" stroke-width="2.5"/><line x1="16" y1="14" x2="16" y2="14" stroke-width="2.5"/><line x1="8" y1="18" x2="8" y2="18" stroke-width="2.5"/><line x1="12" y1="18" x2="12" y2="18" stroke-width="2.5"/></svg>
+      </div>
+      <div>
+        <div class="org-name">World Vision Development Foundation Inc</div>
+        <div class="page-title">Year-End Closing &amp; Reporting Calendar</div>
+        <span class="badge-fy">FY2026 &middot; Year-End Close &middot; PHLO</span>
+      </div>
+    </div>
+    <div class="header-right">
+      <button class="print-btn" onclick="expandAll();window.print()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+        Print / Save PDF
+      </button>
+      <a href="https://wvi365.sharepoint.com/sites/PHLO-FINANCE18/SitePages/WVDF-MONTH-END-KEYDATES.aspx" target="_blank" rel="noopener" style="background:var(--wvi-blue);color:#fff;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;padding:7px 16px;border-radius:var(--radius);display:inline-flex;align-items:center;gap:6px;text-decoration:none;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+        YE Materials
+      </a>
+    </div>
+  </header>
+
+  <div id="countdown-banner"></div>
+  <div class="metrics" id="metrics"></div>
+
+  <div class="charts-row">
+    <div class="card">
+      <div class="card-title">Activities by owner (top 9)</div>
+      <div id="owner-list"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Activities by month</div>
+      <div style="position:relative;height:210px;">
+        <canvas id="monthChart" role="img" aria-label="Bar chart showing activities by month"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <div class="filter-bar">
+    <div class="filter-group">
+      <div class="filter-group-label">Status</div>
+      <div class="filter-pills" id="status-filters"></div>
+    </div>
+    <div class="filter-group">
+      <div class="filter-group-label">Section</div>
+      <div class="filter-pills" id="section-filters"></div>
+    </div>
+    <div class="filter-group">
+      <div class="filter-group-label">Owner</div>
+      <div class="filter-pills" id="owner-filters"></div>
+    </div>
+  </div>
+
+  <div class="timeline-card">
+    <div class="col-header">
+      <span></span><span>Activity</span><span style="text-align:right">Owner</span><span style="text-align:right">Due Date</span><span style="text-align:right">Type</span><span style="text-align:right">Status</span>
+    </div>
+    <div id="timeline"></div>
+  </div>
+
+  <div class="footer">Generated from PHLO_Calendar.xlsx &middot; World Vision Development Foundation Inc &middot; FY2026 Year-End Closing &amp; Reporting Calendar</div>
+</div>
+
+<script>
+const tasks = [
+  {"status": "Completed", "name": "FY26 Soft Close. All Expense reports from October 2026 to June 2026 must be submitted in Concur.", "cat": "Soft Close", "owner": "All offices and departments", "section": "Year-End Closing", "due": "Jul 30", "dueDate": "2026-07-30", "endDate": "2026-07-30", "day": "Thursday"},
+  {"status": "Completed", "name": "Cut-off to send Repatriation Computation (as confirmed with GC departments and P&C Business Partners)", "cat": "Accruals", "owner": "GFSC - FPRA- GC", "section": "Year-End Closing", "due": "Jul 30", "dueDate": "2026-07-30", "endDate": "2026-07-30", "day": "Thursday"},
+  {"status": "Completed", "name": "Corporate Accounting to post Repatriation Accrual", "cat": "Accruals", "owner": "GFSC - Corporate Accounting", "section": "Year-End Closing", "due": "Jul 30", "dueDate": "2026-07-30", "endDate": "2026-07-30", "day": "Thursday"},
+  {"status": "Completed", "name": "FPRA-FO will issue reports to SO's & Regions with details of spending against PBAS commitments for June FY26 Financial Report", "cat": "PBAS", "owner": "GFSC - FPRA-FO", "section": "Year-End Closing", "due": "Jul 30", "dueDate": "2026-07-30", "endDate": "2026-07-30", "day": "Thursday"},
+  {"status": "Completed", "name": "FY26 Soft Close. All ICB and CHB Invoices and Direct Charges from October 2026 to June 2026 expenses must be submitted for booking in the GCGL.", "cat": "Soft Close", "owner": "All offices and departments", "section": "Year-End Closing", "due": "Jul 30", "dueDate": "2026-07-30", "endDate": "2026-07-30", "day": "Thursday"},
+  {"status": "Completed", "name": "FY26 Soft Close. Last deadline for submission of any WO (write-off) request.", "cat": "Soft Close", "owner": "All offices and departments", "section": "Year-End Closing", "due": "Jul 30", "dueDate": "2026-07-30", "endDate": "2026-07-30", "day": "Thursday"},
+  {"status": "Not yet started", "name": "Estelle Kouyate and Alyssa Cerretti send notification e-mail to management of selected countries and Regional Finance, including expected audit timelines and deliverables. (Sun6 GLs (Period Oct 1, 2026 - June 30, 2026) Note: The date remains tentative and is subject to revision.", "cat": "Single Audit", "owner": "WVUS", "section": "Reporting/Audit", "due": "Aug 17", "dueDate": "2026-08-17", "endDate": "2026-08-17", "day": "Monday"},
+  {"status": "Not yet started", "name": "FPRA-GC to send Severance template to P&C Business Partners", "cat": "Accruals", "owner": "GFSC - FPRA- GC", "section": "Year-End Closing", "due": "Aug 18", "dueDate": "2026-08-18", "endDate": "2026-08-18", "day": "Tuesday"},
+  {"status": "Not yet started", "name": "Clinic in preparation for WVI's FY26 External Audit", "cat": "Webinar", "owner": "GFSC - Corporate Accounting", "section": "Reporting/Audit", "due": "Aug 18", "dueDate": "2026-08-18", "endDate": "2026-08-18", "day": "Tuesday"},
+  {"status": "Not yet started", "name": "Corporate Accounting team to request documents of sampled October to June FY26 expense transactions from selected Field Offices", "cat": "WVI Audit", "owner": "GFSC - Corporate Accounting", "section": "Reporting/Audit", "due": "Aug 24", "dueDate": "2026-08-24", "endDate": "2026-08-24", "day": "Monday"},
+  {"status": "Not yet started", "name": "Selected Field Offices to provide requested Sun6 GLs to WVUS Note: The date remains tentative and is subject to revision.", "cat": "Single Audit", "owner": "Field Offices, Regional Offices & International Offices", "section": "Reporting/Audit", "due": "Aug 24", "dueDate": "2026-08-24", "endDate": "2026-08-24", "day": "Monday"},
+  {"status": "Not yet started", "name": "FY26 year end clinic", "cat": "Webinar", "owner": "GFSC - FPRA-FO", "section": "Year-End Closing", "due": "Aug 26", "dueDate": "2026-08-26", "endDate": "2026-08-26", "day": "Wednesday"},
+  {"status": "Not yet started", "name": "Last date to reduce commitments for FY26 in PBAS (except for grant projects ending in FY26 or reimbursement-type grant projects through ICB Credit Invoices and Direct Funding)", "cat": "PBAS", "owner": "All offices and departments", "section": "Year-End Closing", "due": "Sep 1", "dueDate": "2026-09-01", "endDate": "2026-09-01", "day": "Tuesday"},
+  {"status": "Not yet started", "name": "Send Info Board for LDR Submission reminder (TBD c/o Lej/Arra)", "cat": "LDR", "owner": "Payroll", "section": "Year-End Closing", "due": "Sep 2", "dueDate": "2026-09-02", "endDate": "2026-09-02", "day": "Wednesday"},
+  {"status": "Not yet started", "name": "Fixed asset custodian to submit completed FY26 WVI Fixed Asset Disposal Survey to Corporate Accounting c/o Dennis Roda", "cat": "Fixed Assets", "owner": "GC Departments", "section": "Year-End Closing", "due": "Sep 3", "dueDate": "2026-09-03", "endDate": "2026-09-03", "day": "Thursday"},
+  {"status": "Not yet started", "name": "Confirmation of grant profile from Program Finance (GAM)", "cat": "Horizon", "owner": "RD", "section": "Year-End Closing", "due": "Sep 5–Sep 10", "dueDate": "2026-09-05", "endDate": "2026-09-10", "day": "Saturday"},
+  {"status": "Not yet started", "name": "FY2026 YEAR END WE LEARN", "cat": "Webinar", "owner": "PHLO Finance", "section": "Year-End Closing", "due": "Sep 9", "dueDate": "2026-09-09", "endDate": "2026-09-09", "day": "Wednesday"},
+  {"status": "Not yet started", "name": "August FY26 Account 300 reconciliations / funding reconciliations should not have reconciling items from October 2026 to June 2026 For: ROs Account 30099/98 reconciliations / funding reconciliations should not have reconciling items from October 2026 to June 2026", "cat": "Soft Close", "owner": "Field Offices, Regional Offices & International Offices", "section": "Year-End Closing", "due": "Sep 10", "dueDate": "2026-09-10", "endDate": "2026-09-10", "day": "Thursday"},
+  {"status": "Not yet started", "name": "Selected Field Offices to provide documents of sampled October to June FY26 expense transactions", "cat": "WVI Audit", "owner": "Field Offices, Regional Offices & International Offices", "section": "Reporting/Audit", "due": "Sep 11", "dueDate": "2026-09-11", "endDate": "2026-09-11", "day": "Friday"},
+  {"status": "Not yet started", "name": "Sending of Initial Aging Analysis", "cat": "FFR", "owner": "Shared Services", "section": "Year-End Closing", "due": "Sep 11–Sep 12", "dueDate": "2026-09-11", "endDate": "2026-09-12", "day": "Friday"},
+  {"status": "Not yet started", "name": "Sending of Accrual Template for Fy26 Closed Projects with Separated Staff to Program Finance and P&C", "cat": "LDR", "owner": "Payroll", "section": "Year-End Closing", "due": "Sep 12", "dueDate": "2026-09-12", "endDate": "2026-09-12", "day": "Saturday"},
+  {"status": "Not yet started", "name": "FY2026 YEAR END WE LEARN-SESSION 1 (ALL STAFF)", "cat": "Webinar", "owner": "All-PHLO", "section": "Year-End Closing", "due": "Sep 14", "dueDate": "2026-09-14", "endDate": "2026-09-14", "day": "Monday"},
+  {"status": "Not yet started", "name": "WVUS requests transaction support from Field Offices Note: The date remains tentative and is subject to revision.", "cat": "Single Audit", "owner": "WVUS", "section": "Reporting/Audit", "due": "Sep 14", "dueDate": "2026-09-14", "endDate": "2026-09-14", "day": "Monday"},
+  {"status": "Not yet started", "name": "Receiving of advice/ request for payroll reclass- July and August 2026", "cat": "Payroll", "owner": "Payroll", "section": "Year-End Closing", "due": "Sep 14–Sep 15", "dueDate": "2026-09-14", "endDate": "2026-09-15", "day": "Monday"},
+  {"status": "Not yet started", "name": "FY2026 YEAR END WE LEARN- SESSION 2 (ALL STAFF)", "cat": "Webinar", "owner": "All-PHLO", "section": "Year-End Closing", "due": "Sep 14–Sep 15", "dueDate": "2026-09-14", "endDate": "2026-09-15", "day": "Monday"},
+  {"status": "Not yet started", "name": "Send Outstanding Balance Sheet Accounts to PHLO All Finance for Clearing", "cat": "Clearing", "owner": "GL", "section": "Year-End Closing", "due": "Sep 15", "dueDate": "2026-09-15", "endDate": "2026-09-15", "day": "Tuesday"},
+  {"status": "Not yet started", "name": "Send infoBoard reminder for SA related expenses cut off c/o Nors &Lyn", "cat": "SA", "owner": "AP", "section": "Year-End Closing", "due": "Sep 15", "dueDate": "2026-09-15", "endDate": "2026-09-15", "day": "Tuesday"},
+  {"status": "Not yet started", "name": "Send infoboard guidance on Non-PO to All Staff c/o Lyn (what/who)", "cat": "ProVision", "owner": "AP", "section": "Year-End Closing", "due": "Sep 15", "dueDate": "2026-09-15", "endDate": "2026-09-15", "day": "Tuesday"},
+  {"status": "Not yet started", "name": "Corporate Credit Card charges and out-of-pocket expenses up to 31st August 2026 submitted to Accounts payable through Concur", "cat": "Concur", "owner": "All offices and departments", "section": "Year-End Closing", "due": "Sep 15", "dueDate": "2026-09-15", "endDate": "2026-09-15", "day": "Tuesday"},
+  {"status": "Not yet started", "name": "Sending of Direct Charges Template- for confirmation", "cat": "Clearing", "owner": "GL", "section": "Year-End Closing", "due": "Sep 16", "dueDate": "2026-09-16", "endDate": "2026-09-16", "day": "Wednesday"},
+  {"status": "Not yet started", "name": "Send infoboard reminder for Utilities & Supplies submission", "cat": "ProVision/Concur", "owner": "AP", "section": "Year-End Closing", "due": "Sep 16", "dueDate": "2026-09-16", "endDate": "2026-09-16", "day": "Wednesday"},
+  {"status": "Not yet started", "name": "Submission of Non-PO Invoices/ Expenses payment request to be paid by September 30 Note: Invoices/ received on September 20 until October 3 will be accrued to be paid in October", "cat": "Provision", "owner": "All-PHLO", "section": "Year-End Closing", "due": "Sep 17", "dueDate": "2026-09-17", "endDate": "2026-09-17", "day": "Thursday"},
+  {"status": "Not yet started", "name": "Accrual Confirmation for Fy25 Closed Projects with Separated Staff to Payroll (from Program Finance and P&C)", "cat": "LDR", "owner": "Payroll", "section": "Year-End Closing", "due": "Sep 18", "dueDate": "2026-09-18", "endDate": "2026-09-18", "day": "Friday"},
+  {"status": "Not yet started", "name": "Early cut off day to submit Settlement Advice (SAs) related expenses : Concur-Liquidations, reimbursements ; Provision invoices and copy of invoices for accrual, Payroll related (UNTIL SEPTEMBER 18, 2026)", "cat": "SA", "owner": "AP", "section": "Year-End Closing", "due": "Sep 18–Sep 19", "dueDate": "2026-09-18", "endDate": "2026-09-19", "day": "Friday"},
+  {"status": "Not yet started", "name": "Utilities & Supplies covering Sep – Oct period and billing are to be received by Oct’26, submit estimated but reasonable amount to finance in-charge (Concur Related, Provision & Direct Payments)", "cat": "ProVision/Concur", "owner": "All", "section": "Year-End Closing", "due": "Sep 18–Sep 19", "dueDate": "2026-09-18", "endDate": "2026-09-19", "day": "Friday"},
+  {"status": "Not yet started", "name": "PF to send request/reminder to Direct funders to send funding until September 2, 2026", "cat": "ProVision/Concur", "owner": "Program Finance", "section": "Year-End Closing", "due": "Sep 18–Sep 19", "dueDate": "2026-09-18", "endDate": "2026-09-19", "day": "Friday"},
+  {"status": "Not yet started", "name": "Special loading and distribution of GCGL to offices", "cat": "GCGL Distribution", "owner": "GFSC - FD&C", "section": "Year-End Closing", "due": "Sep 21", "dueDate": "2026-09-21", "endDate": "2026-09-21", "day": "Monday"},
+  {"status": "Not yet started", "name": "Inform Datawarehouse Team to start extracting GCGL data by 9am", "cat": "GCGL Distribution", "owner": "GFSC - Corporate Accounting", "section": "Year-End Closing", "due": "Sep 21", "dueDate": "2026-09-21", "endDate": "2026-09-21", "day": "Monday"},
+  {"status": "Not yet started", "name": "Load the data in OLAP and send out GCGL reports", "cat": "GCGL Distribution", "owner": "GFSC - FD&C", "section": "Year-End Closing", "due": "Sep 21", "dueDate": "2026-09-21", "endDate": "2026-09-21", "day": "Monday"},
+  {"status": "Not yet started", "name": "P&C Business Partners to submit completed Severance templates to FPRA-GC", "cat": "Accruals", "owner": "GC Departments & Regional Offices", "section": "Year-End Closing", "due": "Sep 21", "dueDate": "2026-09-21", "endDate": "2026-09-21", "day": "Monday"},
+  {"status": "Not yet started", "name": "Deadline or cut-off date to charge credit card purchases eligible for FY26 expense reporting (including Office Depot, reference materials, etc.)", "cat": "Concur", "owner": "All offices and departments", "section": "Year-End Closing", "due": "Sep 22", "dueDate": "2026-09-22", "endDate": "2026-09-22", "day": "Tuesday"},
+  {"status": "Not yet started", "name": "Load data in relation to GCFR", "cat": "GCFR", "owner": "GFSC - FD&C", "section": "Year-End Closing", "due": "Sep 22", "dueDate": "2026-09-22", "endDate": "2026-09-22", "day": "Tuesday"},
+  {"status": "Not yet started", "name": "Sending of Transaction Listing for Critical Grants Projects in MS Teams (for hardcopy collection)", "cat": "Concur", "owner": "Program Finance", "section": "Year-End Closing", "due": "Sep 22–Sep 25", "dueDate": "2026-09-22", "endDate": "2026-09-25", "day": "Tuesday"},
+  {"status": "Not yet started", "name": "Last day of invoice approval for cash basis accounting for Koica( payments are debited in our account within September 2026)", "cat": "Provision", "owner": "Shared Services", "section": "Year-End Closing", "due": "Sep 22–Sep 25", "dueDate": "2026-09-22", "endDate": "2026-09-25", "day": "Tuesday"},
+  {"status": "Not yet started", "name": "Pre-Year End GCFR", "cat": "GCFR", "owner": "GFSC - FPRA- GC", "section": "Year-End Closing", "due": "Sep 23", "dueDate": "2026-09-23", "endDate": "2026-09-23", "day": "Wednesday"},
+  {"status": "Not yet started", "name": "Send Pre-Year End GCFR based from September 23 special loading", "cat": "GCFR", "owner": "GFSC - FPRA- GC", "section": "Year-End Closing", "due": "Sep 23", "dueDate": "2026-09-23", "endDate": "2026-09-23", "day": "Wednesday"},
+  {"status": "Not yet started", "name": "GC departments to submit direct charge templates to FPRA-GC for review. Note: Charges affecting SO's with early closing dates should be sent earlier; refer to Support Offices with Early Closing Dates section in this calendar.", "cat": "Direct Charges", "owner": "GC Departments & Regional Offices", "section": "Year-End Closing", "due": "Sep 24", "dueDate": "2026-09-24", "endDate": "2026-09-24", "day": "Thursday"},
+  {"status": "Not yet started", "name": "Send request reminder for Item G (Purchased Inventory Listing) As of Sep 30, 2026", "cat": "FFR", "owner": "GL", "section": "Year-End Closing", "due": "Sep 25", "dueDate": "2026-09-25", "endDate": "2026-09-25", "day": "Friday"},
+  {"status": "Not yet started", "name": "Inform Datawarehouse Team to start extracting GCGL data by 9am", "cat": "GCGL Distribution", "owner": "GFSC - Corporate Accounting", "section": "Year-End Closing", "due": "Sep 28", "dueDate": "2026-09-28", "endDate": "2026-09-28", "day": "Monday"},
+  {"status": "Not yet started", "name": "Submit and approve all ICB, CHB and Non-WFP Invoices in Blackline affecting WV Australia", "cat": "SO Closing Date", "owner": "All offices and departments", "section": "Support Offices with Early Closing Dates", "due": "Sep 28", "dueDate": "2026-09-28", "endDate": "2026-09-28", "day": "Monday"},
+  {"status": "Not yet started", "name": "Submit and approve all WFP and 5UN Invoices in Blackline affecting WV Australia", "cat": "SO Closing Date", "owner": "All offices and departments", "section": "Support Offices with Early Closing Dates", "due": "Sep 28", "dueDate": "2026-09-28", "endDate": "2026-09-28", "day": "Monday"},
+  {"status": "Not yet started", "name": "Submit to Corporate Accounting all GIK entries affecting WV Australia.", "cat": "SO Closing Date", "owner": "All offices and departments", "section": "Support Offices with Early Closing Dates", "due": "Sep 28", "dueDate": "2026-09-28", "endDate": "2026-09-28", "day": "Monday"},
+  {"status": "Not yet started", "name": "Submit to Corporate Accounting all other adjusting entries affecting WV Australia.", "cat": "SO Closing Date", "owner": "All offices and departments", "section": "Support Offices with Early Closing Dates", "due": "Sep 28", "dueDate": "2026-09-28", "endDate": "2026-09-28", "day": "Monday"},
+  {"status": "Not yet started", "name": "Last day of Conversion Entries", "cat": "Conversion", "owner": "AP", "section": "Year-End Closing", "due": "Sep 29", "dueDate": "2026-09-29", "endDate": "2026-09-29", "day": "Tuesday"},
+  {"status": "Not yet started", "name": "Send Outstanding Balance Sheet Accounts to PHLO All Finance for Clearing", "cat": "Clearing", "owner": "GL", "section": "Year-End Closing", "due": "Sep 29", "dueDate": "2026-09-29", "endDate": "2026-09-29", "day": "Tuesday"},
+  {"status": "Not yet started", "name": "Account Allocation", "cat": "Clearing", "owner": "Shared Services", "section": "Year-End Closing", "due": "Sep 29", "dueDate": "2026-09-29", "endDate": "2026-09-29", "day": "Tuesday"},
+  {"status": "Not yet started", "name": "Last day of Funding Entries (based on preliminary GCGL reports)- PF's to send reminder of remittance due date to direct funders", "cat": "Revaluation", "owner": "GL", "section": "Year-End Closing", "due": "Sep 29", "dueDate": "2026-09-29", "endDate": "2026-09-29", "day": "Tuesday"},
+  {"status": "Not yet started", "name": "Review & Correct Codings", "cat": "Revaluation", "owner": "GL", "section": "Year-End Closing", "due": "Sep 29", "dueDate": "2026-09-29", "endDate": "2026-09-29", "day": "Tuesday"},
+  {"status": "Not yet started", "name": "Field Offices to submit World Food Program CSS", "cat": "WFP", "owner": "Field Offices", "section": "Year-End Closing", "due": "Sep 29", "dueDate": "2026-09-29", "endDate": "2026-09-29", "day": "Tuesday"},
+  {"status": "Not yet started", "name": "Field Offices to perform Inventory Counts for in relation to Items O & G", "cat": "Inventory", "owner": "Field Offices, Regional Offices & International Offices", "section": "Year-End Closing", "due": "Sep 29", "dueDate": "2026-09-29", "endDate": "2026-09-29", "day": "Tuesday"},
+  {"status": "Not yet started", "name": "Submit and approve all ICB, CHB and Non-WFP Invoices in Blackline affecting WV Canada. Note: Last cut-off date to submit and approve Invoices in Blackline is October 2, 2026", "cat": "SO Closing Date", "owner": "All offices and departments", "section": "Support Offices with Early Closing Dates", "due": "Sep 29", "dueDate": "2026-09-29", "endDate": "2026-09-29", "day": "Tuesday"},
+  {"status": "Not yet started", "name": "Submit and approve all WFP and 5UN Invoices in Blackline affecting WV Canada.", "cat": "SO Closing Date", "owner": "All offices and departments", "section": "Support Offices with Early Closing Dates", "due": "Sep 29", "dueDate": "2026-09-29", "endDate": "2026-09-29", "day": "Tuesday"},
+  {"status": "Not yet started", "name": "Check completeness of lease records and provide information on any missing lease from the list to Corporate Accounting", "cat": "WVI Audit", "owner": "Field Offices, Regional Offices & International Offices", "section": "Reporting/Audit", "due": "Sep 29", "dueDate": "2026-09-29", "endDate": "2026-09-29", "day": "Tuesday"},
+  {"status": "Not yet started", "name": "Computation of Exchange rate & REVALUATION", "cat": "Revaluation", "owner": "Shared Services", "section": "Year-End Closing", "due": "Sep 30", "dueDate": "2026-09-30", "endDate": "2026-09-30", "day": "Wednesday"},
+  {"status": "Not yet started", "name": "Sending of Ageing Analysis as of this date", "cat": "FFR", "owner": "Shared Services", "section": "Year-End Closing", "due": "Sep 30", "dueDate": "2026-09-30", "endDate": "2026-09-30", "day": "Wednesday"},
+  {"status": "Not yet started", "name": "Last day of PYR (for additional/urgent disbursements)", "cat": "PYR", "owner": "Shared Services", "section": "Year-End Closing", "due": "Sep 30", "dueDate": "2026-09-30", "endDate": "2026-09-30", "day": "Wednesday"},
+  {"status": "Not yet started", "name": "Extract grant profile from Horizon (Final)", "cat": "Horizon", "owner": "RD", "section": "Year-End Closing", "due": "Sep 30", "dueDate": "2026-09-30", "endDate": "2026-09-30", "day": "Wednesday"},
+  {"status": "Not yet started", "name": "2nd cut off day to submit Settlement Advice (SAs) related expenses : Concur-Liquidations, reimbursements ; Provision invoices and copy of invoices for accrual, Payroll related (SEPTEMBER 16-30, 2026 ONLY)", "cat": "SA", "owner": "AP", "section": "Year-End Closing", "due": "Sep 30", "dueDate": "2026-09-30", "endDate": "2026-09-30", "day": "Wednesday"},
+  {"status": "Not yet started", "name": "Payroll cut-off for International Payroll due to GC-HR for any International payroll changes, salary advances and LDR's for Sept 2026 (GCMO, GCKL, LEXO, EASO, SAPO, LCRO, ASSC, GSSC, GNVO, GFRO, SARO, MEEO, WARO, EARO, AREO)", "cat": "Payroll", "owner": "All offices and departments", "section": "Year-End Closing", "due": "Sep 30", "dueDate": "2026-09-30", "endDate": "2026-09-30", "day": "Wednesday"},
+  {"status": "Not yet started", "name": "Last cut-off date to submit and approve Pre-approval (PA) in Blackline", "cat": "Intercompany Billing & Chargebacks", "owner": "All offices and departments", "section": "Year-End Closing", "due": "Sep 30", "dueDate": "2026-09-30", "endDate": "2026-09-30", "day": "Wednesday"},
+  {"status": "Not yet started", "name": "<new> Last cut-off date to approve and review Invoices in Blackline for WFP & 5UN (Any remaining pending Invoices will be processed in FY27).", "cat": "Intercompany Billing & Chargebacks", "owner": "Field Offices", "section": "Year-End Closing", "due": "Sep 30", "dueDate": "2026-09-30", "endDate": "2026-09-30", "day": "Wednesday"},
+  {"status": "Not yet started", "name": "WV Taiwan Note: The date remains tentative and is subject to revision.", "cat": "SO Closing Date", "owner": "All offices and departments", "section": "Support Offices with Early Closing Dates", "due": "Sep 30", "dueDate": "2026-09-30", "endDate": "2026-09-30", "day": "Wednesday"},
+  {"status": "Not yet started", "name": "Submit and approve all ICB, CHB and Non-WFP Invoices in Blackline affecting WV New Taiwan.", "cat": "SO Closing Date", "owner": "All offices and departments", "section": "Support Offices with Early Closing Dates", "due": "Sep 30", "dueDate": "2026-09-30", "endDate": "2026-09-30", "day": "Wednesday"},
+  {"status": "Not yet started", "name": "Submit and approve all WFP and 5UN Invoices in Blackline affecting WV Taiwan.", "cat": "SO Closing Date", "owner": "All offices and departments", "section": "Support Offices with Early Closing Dates", "due": "Sep 30", "dueDate": "2026-09-30", "endDate": "2026-09-30", "day": "Wednesday"},
+  {"status": "Not yet started", "name": "Submit to Corporate Accounting all GIK entries affecting WV New Taiwan.", "cat": "SO Closing Date", "owner": "All offices and departments", "section": "Support Offices with Early Closing Dates", "due": "Sep 30", "dueDate": "2026-09-30", "endDate": "2026-09-30", "day": "Wednesday"},
+  {"status": "Not yet started", "name": "Submit to Corporate Accounting all other adjusting entries affecting WV Taiwan.", "cat": "SO Closing Date", "owner": "All offices and departments", "section": "Support Offices with Early Closing Dates", "due": "Sep 30", "dueDate": "2026-09-30", "endDate": "2026-09-30", "day": "Wednesday"},
+  {"status": "Not yet started", "name": "Submit and approve all ICB, CHB and Non-WFP Invoices in Blackline affecting WV Korea.", "cat": "SO Closing Date", "owner": "All offices and departments", "section": "Support Offices with Early Closing Dates", "due": "Sep 30", "dueDate": "2026-09-30", "endDate": "2026-09-30", "day": "Wednesday"},
+  {"status": "Not yet started", "name": "Submit and approve all WFP and 5UN Invoices in Blackline affecting WV Korea.", "cat": "SO Closing Date", "owner": "All offices and departments", "section": "Support Offices with Early Closing Dates", "due": "Sep 30", "dueDate": "2026-09-30", "endDate": "2026-09-30", "day": "Wednesday"},
+  {"status": "Not yet started", "name": "Charging Confirmation (Direct Charge, Payroll, Insurance, Mobile allowance )- except EU/BMZ", "cat": "Charging Confirmation", "owner": "PHLO Finance", "section": "Year-End Closing", "due": "Oct 1", "dueDate": "2026-10-01", "endDate": "2026-10-01", "day": "Thursday"},
+  {"status": "Not yet started", "name": "Last day for confirmation of grant profile from Program Finance (GAM)", "cat": "Horizon", "owner": "RD", "section": "Year-End Closing", "due": "Oct 1", "dueDate": "2026-10-01", "endDate": "2026-10-01", "day": "Thursday"},
+  {"status": "Not yet started", "name": "For GC departments using ProVision - Deadline of sending invoices to be processed in FY26", "cat": "ProVision", "owner": "GC Departments", "section": "Year-End Closing", "due": "Oct 1", "dueDate": "2026-10-01", "endDate": "2026-10-01", "day": "Thursday"},
+  {"status": "Not yet started", "name": "For field offices using ProVision - Deadline of Submission of Invoices in Cognito", "cat": "ProVision", "owner": "All-PHLO", "section": "Year-End Closing", "due": "Oct 1", "dueDate": "2026-10-01", "endDate": "2026-10-01", "day": "Thursday"},
+  {"status": "Not yet started", "name": "Special loading and distribution of GCGL to offices", "cat": "GCGL Distribution", "owner": "GFSC - FD&C", "section": "Year-End Closing", "due": "Oct 1", "dueDate": "2026-10-01", "endDate": "2026-10-01", "day": "Thursday"},
+  {"status": "Not yet started", "name": "Load the data in OLAP and send out GCGL reports", "cat": "GCGL Distribution", "owner": "GFSC - FD&C", "section": "Year-End Closing", "due": "Oct 1", "dueDate": "2026-10-01", "endDate": "2026-10-01", "day": "Thursday"},
+  {"status": "Not yet started", "name": "Special loading of GCFR", "cat": "GCFR", "owner": "GFSC - FD&C", "section": "Year-End Closing", "due": "Oct 1", "dueDate": "2026-10-01", "endDate": "2026-10-01", "day": "Thursday"},
+  {"status": "Not yet started", "name": "WV Australia Note: The date remains tentative and is subject to revision.", "cat": "SO Closing Date", "owner": "All offices and departments", "section": "Support Offices with Early Closing Dates", "due": "Oct 1", "dueDate": "2026-10-01", "endDate": "2026-10-01", "day": "Thursday"},
+  {"status": "Not yet started", "name": "Finalize FY25 Budget Entries- For International Projects", "cat": "Budget", "owner": "Program Finance", "section": "Year-End Closing", "due": "Oct 1–Oct 2", "dueDate": "2026-10-01", "endDate": "2026-10-02", "day": "Thursday"},
+  {"status": "Not yet started", "name": "Charging Confirmation (Direct Charge, Payroll, Insurance )-EU/BMZ", "cat": "Charging Confirmation", "owner": "PHLO Finance", "section": "Year-End Closing", "due": "Oct 1–Oct 2", "dueDate": "2026-10-01", "endDate": "2026-10-02", "day": "Thursday"},
+  {"status": "Not yet started", "name": "LDR Submission (Offline LDR or Workday) -EU/BMZ", "cat": "Charging Confirmation", "owner": "PHLO Finance", "section": "Year-End Closing", "due": "Oct 1–Oct 2", "dueDate": "2026-10-01", "endDate": "2026-10-02", "day": "Thursday"},
+  {"status": "Not yet started", "name": "Expense Reports for FY26 travel completed and SUBMITTED through Concur.", "cat": "Concur", "owner": "PHLO Finance", "section": "Year-End Closing", "due": "Oct 2", "dueDate": "2026-10-02", "endDate": "2026-10-02", "day": "Friday"},
+  {"status": "Not yet started", "name": "Expense Reports for FY26 travel completed and APPROVED (12NN CUT OFF) through Concur.", "cat": "Concur", "owner": "All offices and departments", "section": "Year-End Closing", "due": "Oct 2", "dueDate": "2026-10-02", "endDate": "2026-10-02", "day": "Friday"},
+  {"status": "Not yet started", "name": "Expense Reports for FY26 up to September travel completed and submitted through Concur.", "cat": "Concur", "owner": "All offices and departments", "section": "Year-End Closing", "due": "Oct 2", "dueDate": "2026-10-02", "endDate": "2026-10-02", "day": "Friday"},
+  {"status": "Not yet started", "name": "Corporate Card Charges for FY26 reconciled and submitted through Concur", "cat": "Concur", "owner": "All offices and departments", "section": "Year-End Closing", "due": "Oct 2", "dueDate": "2026-10-02", "endDate": "2026-10-02", "day": "Friday"},
+  {"status": "Not yet started", "name": "Sending of GCFR based on October 2 loading", "cat": "GCFR", "owner": "GFSC - FPRA- GC", "section": "Year-End Closing", "due": "Oct 2", "dueDate": "2026-10-02", "endDate": "2026-10-02", "day": "Friday"},
+  {"status": "Not yet started", "name": "For field offices using ProVision - Deadline of creation of Direct Entry Invoice Implemented-Offices and sending invoices to be processed in FY26", "cat": "ProVision", "owner": "Field Offices, Regional Offices & International Offices", "section": "Year-End Closing", "due": "Oct 2", "dueDate": "2026-10-02", "endDate": "2026-10-02", "day": "Friday"},
+  {"status": "Not yet started", "name": "Corporate Accounting to post all prepaid amortization for FY26", "cat": "Accruals", "owner": "GFSC - Corporate Accounting", "section": "Year-End Closing", "due": "Oct 2", "dueDate": "2026-10-02", "endDate": "2026-10-02", "day": "Friday"},
+  {"status": "Not yet started", "name": "Sumbit to Corporate Accounting completed workbook and questionnaires for capitalization of fixed assets (c/o Dennis Roda)", "cat": "Fixed Assets", "owner": "GC Departments", "section": "Year-End Closing", "due": "Oct 2", "dueDate": "2026-10-02", "endDate": "2026-10-02", "day": "Friday"},
+  {"status": "Not yet started", "name": "Submit the Severance year-end journal entry to Corporate Accounting based on actuals as of September 30 (Initial only)", "cat": "Accruals", "owner": "GFSC - FPRA- GC", "section": "Year-End Closing", "due": "Oct 2", "dueDate": "2026-10-02", "endDate": "2026-10-02", "day": "Friday"},
+  {"status": "Not yet started", "name": "Submit and approve all ICB, CHB and Non-WFP Invoices in Blackline affecting WV Austria", "cat": "SO Closing Date", "owner": "All offices and departments", "section": "Support Offices with Early Closing Dates", "due": "Oct 2", "dueDate": "2026-10-02", "endDate": "2026-10-02", "day": "Friday"},
+  {"status": "Not yet started", "name": "Submit and approve all WFP and 5UN Invoices in Blackline affecting WV Austria", "cat": "SO Closing Date", "owner": "All offices and departments", "section": "Support Offices with Early Closing Dates", "due": "Oct 2", "dueDate": "2026-10-02", "endDate": "2026-10-02", "day": "Friday"},
+  {"status": "Not yet started", "name": "Submit to Corporate Accounting all GIK entries affecting WV Austria.", "cat": "SO Closing Date", "owner": "All offices and departments", "section": "Support Offices with Early Closing Dates", "due": "Oct 2", "dueDate": "2026-10-02", "endDate": "2026-10-02", "day": "Friday"},
+  {"status": "Not yet started", "name": "Submit to Corporate Accounting all other adjusting entries affecting WV Austria.", "cat": "SO Closing Date", "owner": "All offices and departments", "section": "Support Offices with Early Closing Dates", "due": "Oct 2", "dueDate": "2026-10-02", "endDate": "2026-10-02", "day": "Friday"},
+  {"status": "Not yet started", "name": "Submit to Corporate Accounting all other adjusting entries affecting WV Canada.", "cat": "SO Closing Date", "owner": "All offices and departments", "section": "Support Offices with Early Closing Dates", "due": "Oct 2", "dueDate": "2026-10-02", "endDate": "2026-10-02", "day": "Friday"},
+  {"status": "Not yet started", "name": "Submit and approve all ICB, CHB and Non-WFP Invoices in Blackline affecting WV Hong kong.", "cat": "SO Closing Date", "owner": "All offices and departments", "section": "Support Offices with Early Closing Dates", "due": "Oct 2", "dueDate": "2026-10-02", "endDate": "2026-10-02", "day": "Friday"},
+  {"status": "Not yet started", "name": "Submit and approve all WFP and 5UN Invoices in Blackline affecting WV Hong kong.", "cat": "SO Closing Date", "owner": "All offices and departments", "section": "Support Offices with Early Closing Dates", "due": "Oct 2", "dueDate": "2026-10-02", "endDate": "2026-10-02", "day": "Friday"},
+  {"status": "Not yet started", "name": "Submit to Corporate Accounting all GIK entries affecting WV Hong kong.", "cat": "SO Closing Date", "owner": "All offices and departments", "section": "Support Offices with Early Closing Dates", "due": "Oct 2", "dueDate": "2026-10-02", "endDate": "2026-10-02", "day": "Friday"},
+  {"status": "Not yet started", "name": "Submit to Corporate Accounting all other adjusting entries affecting WV Hong kong.", "cat": "SO Closing Date", "owner": "All offices and departments", "section": "Support Offices with Early Closing Dates", "due": "Oct 2", "dueDate": "2026-10-02", "endDate": "2026-10-02", "day": "Friday"},
+  {"status": "Not yet started", "name": "WV New Zealand", "cat": "SO Closing Date", "owner": "All offices and departments", "section": "Support Offices with Early Closing Dates", "due": "Oct 2", "dueDate": "2026-10-02", "endDate": "2026-10-02", "day": "Friday"},
+  {"status": "Not yet started", "name": "Submit and approve all ICB, CHB and Non-WFP Invoices in Blackline affecting WV New Zealand.", "cat": "SO Closing Date", "owner": "All offices and departments", "section": "Support Offices with Early Closing Dates", "due": "Oct 2", "dueDate": "2026-10-02", "endDate": "2026-10-02", "day": "Friday"},
+  {"status": "Not yet started", "name": "Submit to Corporate Accounting all GIK entries affecting WV New Zealand.", "cat": "SO Closing Date", "owner": "All offices and departments", "section": "Support Offices with Early Closing Dates", "due": "Oct 2", "dueDate": "2026-10-02", "endDate": "2026-10-02", "day": "Friday"},
+  {"status": "Not yet started", "name": "Submit to Corporate Accounting all other adjusting entries affecting WV New Zealand.", "cat": "SO Closing Date", "owner": "All offices and departments", "section": "Support Offices with Early Closing Dates", "due": "Oct 2", "dueDate": "2026-10-02", "endDate": "2026-10-02", "day": "Friday"},
+  {"status": "Not yet started", "name": "Shared Service to submit to FPRA-GC proposed Provision accruals", "cat": "Accruals", "owner": "Shared Services", "section": "Year-End Closing", "due": "Oct 3", "dueDate": "2026-10-03", "endDate": "2026-10-03", "day": "Saturday"},
+  {"status": "Not yet started", "name": "Daily reminder of unreceived goods/ items", "cat": "Provision", "owner": "AP", "section": "Year-End Closing", "due": "Oct 5", "dueDate": "2026-10-05", "endDate": "2026-10-05", "day": "Monday"},
+  {"status": "Not yet started", "name": "For GC departments using ProVision - Deadline of receiving goods and services of outstanding FY26 invoices. Note: \"Receipt date\" in ProVision should be on or before September 30, 2026 for it to be included in FY26.", "cat": "ProVision", "owner": "GC Departments", "section": "Year-End Closing", "due": "Oct 5", "dueDate": "2026-10-05", "endDate": "2026-10-05", "day": "Monday"},
+  {"status": "Not yet started", "name": "Last cut-off date for all Offices to approve ICB and CHB invoices . (Any late Support Office ICB and CHB invoices will have to be approved by the receiving SO prior to posting)", "cat": "Intercompany Billing & Chargebacks", "owner": "All offices and departments", "section": "Year-End Closing", "due": "Oct 5", "dueDate": "2026-10-05", "endDate": "2026-10-05", "day": "Monday"},
+  {"status": "Not yet started", "name": "Cut-off to send FY26 Direct Charges and Accrual Direct Charges to Corporate Accounting for booking in the GCGL. This are for charges to be processed outside Blackline. Note: Charges affecting SO's with early closing dates should be sent earlier; refer to Support Offices with Early Closing Dates section in this calendar. SO's not reflected in this section will follow the deadline of 6th October 2026", "cat": "Direct Charges", "owner": "All offices and departments", "section": "Year-End Closing", "due": "Oct 5", "dueDate": "2026-10-05", "endDate": "2026-10-05", "day": "Monday"},
+  {"status": "Not yet started", "name": "Last cut-off date to approve and review Invoices in Blackline (Any remaining pending Invoices will be processed in FY27).", "cat": "Intercompany Billing & Chargebacks", "owner": "All offices and departments", "section": "Year-End Closing", "due": "Oct 5", "dueDate": "2026-10-05", "endDate": "2026-10-05", "day": "Monday"},
+  {"status": "Not yet started", "name": "For field offices using ProVision - Deadline of \"receiving\" purchases in ProVision. Note: \"Receipt date\" in ProVision should be on or before September 30, 2026 for it to be included in FY26.", "cat": "ProVision", "owner": "Field Offices, Regional Offices & International Offices", "section": "Year-End Closing", "due": "Oct 5", "dueDate": "2026-10-05", "endDate": "2026-10-05", "day": "Monday"},
+  {"status": "Not yet started", "name": "Expense Reports for FY26 travel that was sent back with comments resubmitted through Concur", "cat": "Concur", "owner": "All offices and departments", "section": "Year-End Closing", "due": "Oct 5", "dueDate": "2026-10-05", "endDate": "2026-10-05", "day": "Monday"},
+  {"status": "Not yet started", "name": "WV Austria", "cat": "SO Closing Date", "owner": "All offices and departments", "section": "Support Offices with Early Closing Dates", "due": "Oct 5", "dueDate": "2026-10-05", "endDate": "2026-10-05", "day": "Monday"},
+  {"status": "Not yet started", "name": "WV Hong Kong Note: The date remains tentative and is subject to revision.", "cat": "SO Closing Date", "owner": "All offices and departments", "section": "Support Offices with Early Closing Dates", "due": "Oct 5", "dueDate": "2026-10-05", "endDate": "2026-10-05", "day": "Monday"},
+  {"status": "Not yet started", "name": "WV Ireland", "cat": "SO Closing Date", "owner": "All offices and departments", "section": "Support Offices with Early Closing Dates", "due": "Oct 5", "dueDate": "2026-10-05", "endDate": "2026-10-05", "day": "Monday"},
+  {"status": "Not yet started", "name": "Submit to Corporate Accounting all GIK entries affecting WV Ireland.", "cat": "SO Closing Date", "owner": "All offices and departments", "section": "Support Offices with Early Closing Dates", "due": "Oct 5", "dueDate": "2026-10-05", "endDate": "2026-10-05", "day": "Monday"},
+  {"status": "Not yet started", "name": "Submit to Corporate Accounting all other adjusting entries affecting WV Ireland.", "cat": "SO Closing Date", "owner": "All offices and departments", "section": "Support Offices with Early Closing Dates", "due": "Oct 5", "dueDate": "2026-10-05", "endDate": "2026-10-05", "day": "Monday"},
+  {"status": "Not yet started", "name": "Submit and approve all ICB, CHB and Non-WFP Invoices in Blackline affecting WV United States. Note: Tentative and maybe subject to changes", "cat": "SO Closing Date", "owner": "All offices and departments", "section": "Support Offices with Early Closing Dates", "due": "Oct 5", "dueDate": "2026-10-05", "endDate": "2026-10-05", "day": "Monday"},
+  {"status": "Not yet started", "name": "Submit and approve all WFP and 5UN Invoices in Blackline affecting WV United States. Note: Tentative and maybe subject to changes", "cat": "SO Closing Date", "owner": "All offices and departments", "section": "Support Offices with Early Closing Dates", "due": "Oct 5", "dueDate": "2026-10-05", "endDate": "2026-10-05", "day": "Monday"},
+  {"status": "Not yet started", "name": "LDR submission for the month of October 2026", "cat": "LDR", "owner": "All", "section": "Year-End Closing", "due": "Oct 5–Oct 6", "dueDate": "2026-10-05", "endDate": "2026-10-06", "day": "Monday"},
+  {"status": "Not yet started", "name": "WFP SO Finance Hub to process transactions Note: WFP SO Finance Hub to process transactions for JPNO on October 8th", "cat": "WFP", "owner": "GFSC - FD&C", "section": "Year-End Closing", "due": "Oct 5–Oct 7", "dueDate": "2026-10-05", "endDate": "2026-10-07", "day": "Monday"},
+  {"status": "Not yet started", "name": "Global Assurance and Advisory team to start testing procedure on selected FY26 expense transactions (Interim Testing)", "cat": "WVI Audit", "owner": "Global Internal Audit", "section": "Reporting/Audit", "due": "Oct 5–Oct 30", "dueDate": "2026-10-05", "endDate": "2026-10-30", "day": "Monday"},
+  {"status": "Not yet started", "name": "Shared Service to submit to FPRA-GC proposed Provision accruals", "cat": "Accruals", "owner": "Shared Services", "section": "Year-End Closing", "due": "Oct 6", "dueDate": "2026-10-06", "endDate": "2026-10-06", "day": "Tuesday"},
+  {"status": "Not yet started", "name": "Changing of GL date for: - Pending Receipts - Pending Approval - On Hold, and - Unintegrated invoices AP Associate wil send the list of these invoices to NO and encourage fast approval/receiving/resolving so they could be posted on or before the deadline. Please note: Any remaining Pending approval and Unintegrated invoices that will be changed to October 2026 GL date should be included in the NO Accrual Entries.", "cat": "Provision", "owner": "AP", "section": "Year-End Closing", "due": "Oct 6", "dueDate": "2026-10-06", "endDate": "2026-10-06", "day": "Tuesday"},
+  {"status": "Not yet started", "name": "Share Service to submit concur accrual to GC Corporate Accounting/Field Offices", "cat": "Concur", "owner": "All offices and departments", "section": "Year-End Closing", "due": "Oct 6", "dueDate": "2026-10-06", "endDate": "2026-10-06", "day": "Tuesday"},
+  {"status": "Not yet started", "name": "First Preliminary Close. Corporate Accounting to post entries until end of day.", "cat": "GCGL Closing", "owner": "GFSC - Corporate Accounting", "section": "Year-End Closing", "due": "Oct 6", "dueDate": "2026-10-06", "endDate": "2026-10-06", "day": "Tuesday"},
+  {"status": "Not yet started", "name": "For field offices using ProVision: Deadline to confirm accrual entries", "cat": "ProVision", "owner": "Field Offices, Regional Offices & International Offices", "section": "Year-End Closing", "due": "Oct 6–Oct 8", "dueDate": "2026-10-06", "endDate": "2026-10-08", "day": "Tuesday"},
+  {"status": "Not yet started", "name": "Daily reminder of unsettled concur expense reports", "cat": "Provision", "owner": "AP", "section": "Year-End Closing", "due": "Oct 7", "dueDate": "2026-10-07", "endDate": "2026-10-07", "day": "Wednesday"},
+  {"status": "Not yet started", "name": "Fy25 Annual LDR submission (TBD c/o Lej)", "cat": "LDR", "owner": "All", "section": "Year-End Closing", "due": "Oct 7", "dueDate": "2026-10-07", "endDate": "2026-10-07", "day": "Wednesday"},
+  {"status": "Not yet started", "name": "Last day to send Item G (Purchased Inventory Listing) As of Sep 30", "cat": "FFR", "owner": "GL", "section": "Year-End Closing", "due": "Oct 7", "dueDate": "2026-10-07", "endDate": "2026-10-07", "day": "Wednesday"},
+  {"status": "Not yet started", "name": "Account Analysis & sending of outstanding items", "cat": "Clearing", "owner": "GL", "section": "Year-End Closing", "due": "Oct 7", "dueDate": "2026-10-07", "endDate": "2026-10-07", "day": "Wednesday"},
+  {"status": "Not yet started", "name": "Sending of Accrual Report by SSC", "cat": "Accruals", "owner": "Shared Services", "section": "Year-End Closing", "due": "Oct 7", "dueDate": "2026-10-07", "endDate": "2026-10-07", "day": "Wednesday"},
+  {"status": "Not yet started", "name": "Sending of 59098 clearing by SSC", "cat": "Accruals", "owner": "Shared Services", "section": "Year-End Closing", "due": "Oct 7", "dueDate": "2026-10-07", "endDate": "2026-10-07", "day": "Wednesday"},
+  {"status": "Not yet started", "name": "Verify WVIS Accrual report with Admin (excluding PA/SA)", "cat": "Accruals", "owner": "AP", "section": "Year-End Closing", "due": "Oct 7", "dueDate": "2026-10-07", "endDate": "2026-10-07", "day": "Wednesday"},
+  {"status": "Not yet started", "name": "Sending of WVIS Accrual Report by ARC-Dawna", "cat": "Accruals", "owner": "AP", "section": "Year-End Closing", "due": "Oct 7", "dueDate": "2026-10-07", "endDate": "2026-10-07", "day": "Wednesday"},
+  {"status": "Not yet started", "name": "First preliminary GCGL distribution to GC, FO and SO", "cat": "GCGL Distribution", "owner": "GFSC - FD&C", "section": "Year-End Closing", "due": "Oct 7", "dueDate": "2026-10-07", "endDate": "2026-10-07", "day": "Wednesday"},
+  {"status": "Not yet started", "name": "Inform Datawarehouse Team to start extracting GCGL data by 9am", "cat": "GCGL Distribution", "owner": "GFSC - Corporate Accounting", "section": "Year-End Closing", "due": "Oct 7", "dueDate": "2026-10-07", "endDate": "2026-10-07", "day": "Wednesday"},
+  {"status": "Not yet started", "name": "Load the data in OLAP and send out GCGL reports", "cat": "GCGL Distribution", "owner": "GFSC - FD&C", "section": "Year-End Closing", "due": "Oct 7", "dueDate": "2026-10-07", "endDate": "2026-10-07", "day": "Wednesday"},
+  {"status": "Not yet started", "name": "Last day to adjust commitments for FY26 in PBAS for Direct Funding and grant projects ending in FY26 or reimbursement-type grant projects through ICB Credit Invoices", "cat": "PBAS", "owner": "All offices and departments", "section": "Year-End Closing", "due": "Oct 7", "dueDate": "2026-10-07", "endDate": "2026-10-07", "day": "Wednesday"},
+  {"status": "Not yet started", "name": "1st Preliminary GCFR", "cat": "GCFR", "owner": "GFSC - FPRA- GC", "section": "Year-End Closing", "due": "Oct 7", "dueDate": "2026-10-07", "endDate": "2026-10-07", "day": "Wednesday"},
+  {"status": "Not yet started", "name": "Load data in relation to GCFR", "cat": "GCFR", "owner": "GFSC - FD&C", "section": "Year-End Closing", "due": "Oct 7", "dueDate": "2026-10-07", "endDate": "2026-10-07", "day": "Wednesday"},
+  {"status": "Not yet started", "name": "Send 1st Draft GCFR based from first preliminary GCGL distribution", "cat": "GCFR", "owner": "GFSC - FPRA- GC", "section": "Year-End Closing", "due": "Oct 7", "dueDate": "2026-10-07", "endDate": "2026-10-07", "day": "Wednesday"},
+  {"status": "Not yet started", "name": "1st Preliminary Ledger Extract - FPRA-FO will run the Ledger Extracts and validate accounts", "cat": "FO Ledger Extract", "owner": "GFSC - FD&C", "section": "Year-End Closing", "due": "Oct 7", "dueDate": "2026-10-07", "endDate": "2026-10-07", "day": "Wednesday"},
+  {"status": "Not yet started", "name": "Datawarehouse to load FO data in OLAP", "cat": "FO Ledger Extract", "owner": "GFSC - FD&C", "section": "Year-End Closing", "due": "Oct 7", "dueDate": "2026-10-07", "endDate": "2026-10-07", "day": "Wednesday"},
+  {"status": "Not yet started", "name": "WV Canada", "cat": "SO Closing Date", "owner": "All offices and departments", "section": "Support Offices with Early Closing Dates", "due": "Oct 7", "dueDate": "2026-10-07", "endDate": "2026-10-07", "day": "Wednesday"},
+  {"status": "Not yet started", "name": "Submit to Corporate Accounting all GIK entries affecting WV Canada.", "cat": "SO Closing Date", "owner": "All offices and departments", "section": "Support Offices with Early Closing Dates", "due": "Oct 7", "dueDate": "2026-10-07", "endDate": "2026-10-07", "day": "Wednesday"},
+  {"status": "Not yet started", "name": "Deadline to confirm 59098 Charging", "cat": "Accruals", "owner": "Shared Services", "section": "Year-End Closing", "due": "Oct 7–Oct 9", "dueDate": "2026-10-07", "endDate": "2026-10-09", "day": "Wednesday"},
+  {"status": "Not yet started", "name": "Direct Funding Reconciliation (Actual vs Bduget)", "cat": "PBAS", "owner": "All", "section": "Year-End Closing", "due": "Oct 8", "dueDate": "2026-10-08", "endDate": "2026-10-08", "day": "Thursday"},
+  {"status": "Not yet started", "name": "FPRA-FO to validate accounts", "cat": "FO Ledger Extract", "owner": "GFSC - FPRA-FO", "section": "Year-End Closing", "due": "Oct 8", "dueDate": "2026-10-08", "endDate": "2026-10-08", "day": "Thursday"},
+  {"status": "Not yet started", "name": "FPRA-GC to review ProVision line items subject for accrual. Raise potential error on expense and prepaid line items.", "cat": "Accruals", "owner": "GFSC - FPRA- GC", "section": "Year-End Closing", "due": "Oct 8", "dueDate": "2026-10-08", "endDate": "2026-10-08", "day": "Thursday"},
+  {"status": "Not yet started", "name": "First Funding Reconciliation due (a/c 300) based on first preliminary GCGL uploaded in the FFR Module in the new PBAS platform", "cat": "Funding Reconciliation", "owner": "Field Offices, Regional Offices & International Offices", "section": "Year-End Closing", "due": "Oct 8", "dueDate": "2026-10-08", "endDate": "2026-10-08", "day": "Thursday"},
+  {"status": "Not yet started", "name": "Submit to Corporate Accounting all GIK entries affecting WV Korea.", "cat": "SO Closing Date", "owner": "All offices and departments", "section": "Support Offices with Early Closing Dates", "due": "Oct 8", "dueDate": "2026-10-08", "endDate": "2026-10-08", "day": "Thursday"},
+  {"status": "Not yet started", "name": "Submit to Corporate Accounting all other adjusting entries affecting WV Korea.", "cat": "SO Closing Date", "owner": "All offices and departments", "section": "Support Offices with Early Closing Dates", "due": "Oct 8", "dueDate": "2026-10-08", "endDate": "2026-10-08", "day": "Thursday"},
+  {"status": "Not yet started", "name": "<new> GC Corporate Accounting (c/o Irene Jeyamalar) to send GC Local income report to FPRA-SO", "cat": "GCGL Distribution", "owner": "GFSC - Corporate Accounting", "section": "Year-End Closing", "due": "Oct 9", "dueDate": "2026-10-09", "endDate": "2026-10-09", "day": "Friday"},
+  {"status": "Not yet started", "name": "Issuance of Invoice (Asset Disposal) cut off", "cat": "AP", "owner": "AP", "section": "Year-End Closing", "due": "Oct 9", "dueDate": "2026-10-09", "endDate": "2026-10-09", "day": "Friday"},
+  {"status": "Not yet started", "name": "Deadline to confirm WVIS accrual entries", "cat": "Accruals", "owner": "PHLO Finance", "section": "Year-End Closing", "due": "Oct 9", "dueDate": "2026-10-09", "endDate": "2026-10-09", "day": "Friday"},
+  {"status": "Not yet started", "name": "RD Entries (1xxx-3xxx & 5xxx(T1=R4ZZZ) related accounts only)", "cat": "RD Entries", "owner": "RD", "section": "Year-End Closing", "due": "Oct 9", "dueDate": "2026-10-09", "endDate": "2026-10-09", "day": "Friday"},
+  {"status": "Not yet started", "name": "For ProVision - Post ProVision accruals in the GL (Shared Service Customers)", "cat": "ProVision", "owner": "Shared Services", "section": "Year-End Closing", "due": "Oct 9", "dueDate": "2026-10-09", "endDate": "2026-10-09", "day": "Friday"},
+  {"status": "Not yet started", "name": "FPRA-FO to provide updated Direct Funding and Local Income reconciliation based on 1st close figures", "cat": "Funding Reconciliation", "owner": "GFSC - FPRA-FO", "section": "Year-End Closing", "due": "Oct 9", "dueDate": "2026-10-09", "endDate": "2026-10-09", "day": "Friday"},
+  {"status": "Not yet started", "name": "FPRA-FO will upload to PBAS Year To Date Actual based on 1st preliminary LE", "cat": "PBAS", "owner": "GFSC - FPRA-FO", "section": "Year-End Closing", "due": "Oct 9", "dueDate": "2026-10-09", "endDate": "2026-10-09", "day": "Friday"},
+  {"status": "Not yet started", "name": "FPRA-FO will issue validation reports to FO's & Regions based on the 1st preliminary LE. Offices are expected to make corrections on their books.", "cat": "FO Ledger Extract", "owner": "GFSC - FPRA-FO", "section": "Year-End Closing", "due": "Oct 9", "dueDate": "2026-10-09", "endDate": "2026-10-09", "day": "Friday"},
+  {"status": "Not yet started", "name": "Special loading and distribution of GCGL to offices (GCGL data before second preliminary close)", "cat": "GCGL Distribution", "owner": "GFSC - FD&C", "section": "Year-End Closing", "due": "Oct 9", "dueDate": "2026-10-09", "endDate": "2026-10-09", "day": "Friday"},
+  {"status": "Not yet started", "name": "Inform Datawarehouse Team to start extracting GCGL data by 9am", "cat": "GCGL Distribution", "owner": "GFSC - Corporate Accounting", "section": "Year-End Closing", "due": "Oct 9", "dueDate": "2026-10-09", "endDate": "2026-10-09", "day": "Friday"},
+  {"status": "Not yet started", "name": "Load the data in OLAP and send out GCGL reports", "cat": "GCGL Distribution", "owner": "GFSC - FD&C", "section": "Year-End Closing", "due": "Oct 9", "dueDate": "2026-10-09", "endDate": "2026-10-09", "day": "Friday"},
+  {"status": "Not yet started", "name": "Load data in relation to GCFR based on October 09 special loading", "cat": "GCFR", "owner": "GFSC - FD&C", "section": "Year-End Closing", "due": "Oct 9", "dueDate": "2026-10-09", "endDate": "2026-10-09", "day": "Friday"},
+  {"status": "Not yet started", "name": "Support Offices to review World Food Program CSS Note: CANO to review WFP CSS and send booking info sheets to Corporate Accounting on October 9th", "cat": "WFP", "owner": "Support Offices", "section": "Year-End Closing", "due": "Oct 9", "dueDate": "2026-10-09", "endDate": "2026-10-09", "day": "Friday"},
+  {"status": "Not yet started", "name": "WFP SO Finance Hub to send booking info sheets to Corporate Accounting. Note: Charges affecting SO's with early closing dates should be sent earlier; refer to Support Offices with Early Closing Dates section in this calendar. CANO to review WFP CSS and send booking info sheets to Corporate Accounting on October 14th", "cat": "WFP", "owner": "GFSC - FD&C", "section": "Year-End Closing", "due": "Oct 9", "dueDate": "2026-10-09", "endDate": "2026-10-09", "day": "Friday"},
+  {"status": "Not yet started", "name": "Corporate Accounting to post amortization of prepayments booked during 1st close", "cat": "Accruals", "owner": "GFSC - Corporate Accounting", "section": "Year-End Closing", "due": "Oct 9", "dueDate": "2026-10-09", "endDate": "2026-10-09", "day": "Friday"},
+  {"status": "Not yet started", "name": "Deadline of submission of NonProVision and other accruals to Corporate Accounting. Note: Charges affecting SO's with early closing dates should be sent earlier; refer to Support Offices with Early Closing Dates section in this calendar.", "cat": "Accruals", "owner": "GC Departments & Regional Offices", "section": "Year-End Closing", "due": "Oct 9", "dueDate": "2026-10-09", "endDate": "2026-10-09", "day": "Friday"},
+  {"status": "Not yet started", "name": "Last date for GC and RO to adjust from Core GC department/cost center to PBAS project or vice versa", "cat": "PBAS", "owner": "GC Departments & Regional Offices", "section": "Year-End Closing", "due": "Oct 9", "dueDate": "2026-10-09", "endDate": "2026-10-09", "day": "Friday"},
+  {"status": "Not yet started", "name": "FPRA-GC Review of First Preliminary GCGL and send adjustments to Corporate Accounting. Review might cause additional adjustment to some offices. Notes: (1) Final reclassifications/adjustments should be submitted by this date; (2) Charges affecting SO's with early closing dates should be sent earlier; refer to Support Offices with Early Closing Dates section in this calendar; (3) Raise erroneously booked items i.e. expensed but should have been prepaid.", "cat": "Direct Charges & Chargebacks", "owner": "GFSC - FPRA- GC", "section": "Year-End Closing", "due": "Oct 9", "dueDate": "2026-10-09", "endDate": "2026-10-09", "day": "Friday"},
+  {"status": "Not yet started", "name": "Send final adjustments/reclassifications to Corporate Accounting Notes: (1) Final reclassifications/adjustments should be submitted by this date; (2) Charges affecting SO's with early closing dates should be sent earlier; refer to Support Offices with Early Closing Dates section in this calendar; (3) Raise erroneously booked items i.e. expensed but should have been prepaid. (4) Assumption that this has been sent for review by FPRA-GC before submitting to Corporate Accounting..", "cat": "Direct Charges & Chargebacks", "owner": "GC Departments & Regional Offices", "section": "Year-End Closing", "due": "Oct 9", "dueDate": "2026-10-09", "endDate": "2026-10-09", "day": "Friday"},
+  {"status": "Not yet started", "name": "Last date for SO to update PBAS GIK Proposed / Approved Commitment and Actual Shipment", "cat": "PBAS", "owner": "Support Offices", "section": "Year-End Closing", "due": "Oct 9", "dueDate": "2026-10-09", "endDate": "2026-10-09", "day": "Friday"},
+  {"status": "Not yet started", "name": "Send final GIK notice of shipment to GC (for Accounting Journal Entry, not for PBAS)", "cat": "GIK", "owner": "Support Offices", "section": "Year-End Closing", "due": "Oct 9", "dueDate": "2026-10-09", "endDate": "2026-10-09", "day": "Friday"},
+  {"status": "Not yet started", "name": "Post Item (O, G) - approved Inventory listing in the FFR Module in the new PBAS platform", "cat": "Field Financial Reports", "owner": "Field Offices, Regional Offices & International Offices", "section": "Year-End Closing", "due": "Oct 9", "dueDate": "2026-10-09", "endDate": "2026-10-09", "day": "Friday"},
+  {"status": "Not yet started", "name": "Submit to Corporate Accounting all GIK entries affecting WV Germany.", "cat": "SO Closing Date", "owner": "All offices and departments", "section": "Support Offices with Early Closing Dates", "due": "Oct 9", "dueDate": "2026-10-09", "endDate": "2026-10-09", "day": "Friday"},
+  {"status": "Not yet started", "name": "Submit to Corporate Accounting all other adjusting entries affecting WV Germany.", "cat": "SO Closing Date", "owner": "All offices and departments", "section": "Support Offices with Early Closing Dates", "due": "Oct 9", "dueDate": "2026-10-09", "endDate": "2026-10-09", "day": "Friday"},
+  {"status": "Not yet started", "name": "Submit to Corporate Accounting all GIK entries affecting WV United States.", "cat": "SO Closing Date", "owner": "All offices and departments", "section": "Support Offices with Early Closing Dates", "due": "Oct 9", "dueDate": "2026-10-09", "endDate": "2026-10-09", "day": "Friday"},
+  {"status": "Not yet started", "name": "Submit to Corporate Accounting all other adjusting entries affecting WV United States.", "cat": "SO Closing Date", "owner": "All offices and departments", "section": "Support Offices with Early Closing Dates", "due": "Oct 9", "dueDate": "2026-10-09", "endDate": "2026-10-09", "day": "Friday"},
+  {"status": "Not yet started", "name": "-Occupancy -Building Loan -Life Insurance -Health Insurance -National Travel Insurance -International Travel Insurance -Payroll Entries -Direct Charges -Settlement Advice -N2101 Support Cost Reclass to Various Projects - 595 Account For Clearing -170 Reversal/200 Accrual adjustments - Other After Reval Entries", "cat": "After Reval Entries", "owner": "PHLO Finance", "section": "Year-End Closing", "due": "Oct 9–Oct 10", "dueDate": "2026-10-09", "endDate": "2026-10-10", "day": "Friday"},
+  {"status": "Not yet started", "name": "Review Cash Voucher Transfer", "cat": "CVT", "owner": "GL", "section": "Year-End Closing", "due": "Oct 9–Oct 10", "dueDate": "2026-10-09", "endDate": "2026-10-10", "day": "Friday"},
+  {"status": "Not yet started", "name": "Code Clean Up - CVT Codes review - Review Codings of DPC CAL expenses related - Support Cost Centers review TP Review", "cat": "DPC CAL", "owner": "GL", "section": "Year-End Closing", "due": "Oct 9–Oct 10", "dueDate": "2026-10-09", "endDate": "2026-10-10", "day": "Friday"},
+  {"status": "Not yet started", "name": "TP Review", "cat": "DPC CAL", "owner": "Program Finance", "section": "Year-End Closing", "due": "Oct 9–Oct 10", "dueDate": "2026-10-09", "endDate": "2026-10-10", "day": "Friday"},
+  {"status": "Not yet started", "name": "Update list of Excluded Projects for DPC CAL On MS Teams", "cat": "DPC CAL", "owner": "Program Finance", "section": "Year-End Closing", "due": "Oct 9–Oct 10", "dueDate": "2026-10-09", "endDate": "2026-10-10", "day": "Friday"},
+  {"status": "Not yet started", "name": "Non-CAL related entries(NFA,Balance Sheet and Income Accounts only) Clearing of SA Revaluation balances", "cat": "Recording", "owner": "PHLO Finance", "section": "Year-End Closing", "due": "Oct 10", "dueDate": "2026-10-10", "endDate": "2026-10-10", "day": "Saturday"},
+  {"status": "Not yet started", "name": "For GC ProVision - Post ProVision accruals in the GCGL", "cat": "ProVision", "owner": "Shared Services", "section": "Year-End Closing", "due": "Oct 10", "dueDate": "2026-10-10", "endDate": "2026-10-10", "day": "Saturday"},
+  {"status": "Not yet started", "name": "Distribution of GCFR based from October 10 loading", "cat": "GCFR", "owner": "GFSC - FPRA- GC", "section": "Year-End Closing", "due": "Oct 12", "dueDate": "2026-10-12", "endDate": "2026-10-12", "day": "Monday"},
+  {"status": "Not yet started", "name": "SO September FY26 Financial Report (First Draft) which includes FY26 actuals and FY27 Budget; FY26 year-end Balance Sheet; and Sept FY26 SO Cash Flow Forecast - to post to the FFR Module in the new PBAS platform. (FPRA-SO contact is Joie de Asis).", "cat": "SO Financial Report", "owner": "Support Offices", "section": "Year-End Closing", "due": "Oct 12", "dueDate": "2026-10-12", "endDate": "2026-10-12", "day": "Monday"},
+  {"status": "Not yet started", "name": "Second Preliminary Close. Corporate Accounting to post entries until end of day.", "cat": "GCGL Closing", "owner": "GFSC - Corporate Accounting", "section": "Year-End Closing", "due": "Oct 12", "dueDate": "2026-10-12", "endDate": "2026-10-12", "day": "Monday"},
+  {"status": "Not yet started", "name": "Freeze FY26 PBAS database. No changes can be made to FY26 Commitments at this point, except for local income/projects", "cat": "PBAS", "owner": "All offices and departments", "section": "Year-End Closing", "due": "Oct 12", "dueDate": "2026-10-12", "endDate": "2026-10-12", "day": "Monday"},
+  {"status": "Not yet started", "name": "WV Germany", "cat": "SO Closing Date", "owner": "All offices and departments", "section": "Support Offices with Early Closing Dates", "due": "Oct 12", "dueDate": "2026-10-12", "endDate": "2026-10-12", "day": "Monday"},
+  {"status": "Not yet started", "name": "Field Office audit transaction support due to WVUS Note: The date remains tentative and is subject to revision.", "cat": "Single Audit", "owner": "Field Offices, Regional Offices & International Offices", "section": "Reporting/Audit", "due": "Oct 12", "dueDate": "2026-10-12", "endDate": "2026-10-12", "day": "Monday"},
+  {"status": "Not yet started", "name": "DPC CAL (Cluster Costs & Passthrough Projects Allocation", "cat": "DPC CAL", "owner": "FRSC", "section": "Year-End Closing", "due": "Oct 12–Oct 13", "dueDate": "2026-10-12", "endDate": "2026-10-13", "day": "Monday"},
+  {"status": "Not yet started", "name": "Second preliminary GCGL distribution to GC, FO and SO", "cat": "GCGL Distribution", "owner": "GFSC - FD&C", "section": "Year-End Closing", "due": "Oct 13", "dueDate": "2026-10-13", "endDate": "2026-10-13", "day": "Tuesday"},
+  {"status": "Not yet started", "name": "Inform Datawarehouse Team to start extracting GCGL data by 9am", "cat": "GCGL Distribution", "owner": "GFSC - Corporate Accounting", "section": "Year-End Closing", "due": "Oct 13", "dueDate": "2026-10-13", "endDate": "2026-10-13", "day": "Tuesday"},
+  {"status": "Not yet started", "name": "Load the data in OLAP and send out GCGL reports", "cat": "GCGL Distribution", "owner": "GFSC - FD&C", "section": "Year-End Closing", "due": "Oct 13", "dueDate": "2026-10-13", "endDate": "2026-10-13", "day": "Tuesday"},
+  {"status": "Not yet started", "name": "2nd Preliminary Ledger Extract - FPRA-FO will run the Ledger Extracts and validate accounts", "cat": "FO Ledger Extract", "owner": "GFSC - FD&C", "section": "Year-End Closing", "due": "Oct 13", "dueDate": "2026-10-13", "endDate": "2026-10-13", "day": "Tuesday"},
+  {"status": "Not yet started", "name": "Datawarehouse to load FO data in OLAP", "cat": "FO Ledger Extract", "owner": "GFSC - FD&C", "section": "Year-End Closing", "due": "Oct 13", "dueDate": "2026-10-13", "endDate": "2026-10-13", "day": "Tuesday"},
+  {"status": "Not yet started", "name": "Load data in relation to GCFR", "cat": "GCFR", "owner": "GFSC - FD&C", "section": "Year-End Closing", "due": "Oct 13", "dueDate": "2026-10-13", "endDate": "2026-10-13", "day": "Tuesday"},
+  {"status": "Not yet started", "name": "FPRA-FO to validate accounts", "cat": "FO Ledger Extract", "owner": "GFSC - FPRA-FO", "section": "Year-End Closing", "due": "Oct 14", "dueDate": "2026-10-14", "endDate": "2026-10-14", "day": "Wednesday"},
+  {"status": "Not yet started", "name": "2nd Preliminary GCFR", "cat": "GCFR", "owner": "GFSC - FPRA- GC", "section": "Year-End Closing", "due": "Oct 14", "dueDate": "2026-10-14", "endDate": "2026-10-14", "day": "Wednesday"},
+  {"status": "Not yet started", "name": "Send 2nd Draft GCFR based from second preliminary GCGL distribution based on October 14", "cat": "GCFR", "owner": "GFSC - FPRA- GC", "section": "Year-End Closing", "due": "Oct 14", "dueDate": "2026-10-14", "endDate": "2026-10-14", "day": "Wednesday"},
+  {"status": "Not yet started", "name": "Inventory count of World Food Program commodities", "cat": "WFP", "owner": "Field Offices, Regional Offices & International Offices", "section": "Year-End Closing", "due": "Oct 14", "dueDate": "2026-10-14", "endDate": "2026-10-14", "day": "Wednesday"},
+  {"status": "Not yet started", "name": "Second Funding Reconciliation due (a/c 300) based on second preliminary GCGL uploaded in the FFR Module in the new PBAS platform", "cat": "Funding Reconciliation", "owner": "Field Offices, Regional Offices & International Offices", "section": "Year-End Closing", "due": "Oct 14", "dueDate": "2026-10-14", "endDate": "2026-10-14", "day": "Wednesday"},
+  {"status": "Not yet started", "name": "After DPC CAL Entries", "cat": "DPC CAL", "owner": "FRSC", "section": "Year-End Closing", "due": "Oct 14–Oct 16", "dueDate": "2026-10-14", "endDate": "2026-10-16", "day": "Wednesday"},
+  {"status": "Not yet started", "name": "FPRA-FO will issue comparative analysis of (SunSystem) Annual Budget and PBAS’ Last Approved Commitment.", "cat": "PBAS", "owner": "GFSC - FPRA-FO", "section": "Year-End Closing", "due": "Oct 15", "dueDate": "2026-10-15", "endDate": "2026-10-15", "day": "Thursday"},
+  {"status": "Not yet started", "name": "FPRA-FO to provide updated Direct Funding and Local Income reconciliation based on 2nd close figures", "cat": "Funding Reconciliation", "owner": "GFSC - FPRA-FO", "section": "Year-End Closing", "due": "Oct 15", "dueDate": "2026-10-15", "endDate": "2026-10-15", "day": "Thursday"},
+  {"status": "Not yet started", "name": "FPRA-FO will upload to PBAS Year To Date Actual based on 2nd preliminary LE", "cat": "PBAS", "owner": "GFSC - FPRA-FO", "section": "Year-End Closing", "due": "Oct 15", "dueDate": "2026-10-15", "endDate": "2026-10-15", "day": "Thursday"},
+  {"status": "Not yet started", "name": "FPRA-FO will issue validation reports to FO's & Regions based on the 2nd preliminary LE. Offices are expected to make corrections on their books.", "cat": "FO Ledger Extract", "owner": "GFSC - FPRA-FO", "section": "Year-End Closing", "due": "Oct 15", "dueDate": "2026-10-15", "endDate": "2026-10-15", "day": "Thursday"},
+  {"status": "Not yet started", "name": "<new> GC Corporate Accounting (c/o Irene Jeyamalar) to send GC Local income report to FPRA-SO", "cat": "GCGL Distribution", "owner": "GFSC - Corporate Accounting", "section": "Year-End Closing", "due": "Oct 16", "dueDate": "2026-10-16", "endDate": "2026-10-16", "day": "Friday"},
+  {"status": "Not yet started", "name": "Post Item (D) - approved End-of-Service Accrual in the FFR Module in the new PBAS platform", "cat": "Field Financial Reports", "owner": "Field Offices, Regional Offices & International Offices", "section": "Year-End Closing", "due": "Oct 16", "dueDate": "2026-10-16", "endDate": "2026-10-16", "day": "Friday"},
+  {"status": "Not yet started", "name": "Special loading and distribution of GCGL to offices (GCGL data before third preliminary close)", "cat": "GCGL Distribution", "owner": "GFSC - FD&C", "section": "Year-End Closing", "due": "Oct 16", "dueDate": "2026-10-16", "endDate": "2026-10-16", "day": "Friday"},
+  {"status": "Not yet started", "name": "Inform Datawarehouse Team to start extracting GCGL data by 9am", "cat": "GCGL Distribution", "owner": "GFSC - Corporate Accounting", "section": "Year-End Closing", "due": "Oct 16", "dueDate": "2026-10-16", "endDate": "2026-10-16", "day": "Friday"},
+  {"status": "Not yet started", "name": "Load the data in OLAP and send out GCGL reports", "cat": "GCGL Distribution", "owner": "GFSC - FD&C", "section": "Year-End Closing", "due": "Oct 16", "dueDate": "2026-10-16", "endDate": "2026-10-16", "day": "Friday"},
+  {"status": "Not yet started", "name": "Support Offices confirm year-end prefunding/carry forward amounts with Corporate Accounting (Kathleen Carolino, Kathleen Sarmiento)", "cat": "Funding Reconciliation", "owner": "Support Offices", "section": "Year-End Closing", "due": "Oct 16", "dueDate": "2026-10-16", "endDate": "2026-10-16", "day": "Friday"},
+  {"status": "Not yet started", "name": "Third Preliminary Close. Last Chance to book any entries to the GCGL except for the Journal Entries in Item A that will be entered by GC in the 4th / Final GL. Finalize FFR based on Third preliminary GCGL.", "cat": "GCGL Closing", "owner": "GFSC - Corporate Accounting", "section": "Year-End Closing", "due": "Oct 16", "dueDate": "2026-10-16", "endDate": "2026-10-16", "day": "Friday"},
+  {"status": "Not yet started", "name": "WV United States", "cat": "SO Closing Date", "owner": "All offices and departments", "section": "Support Offices with Early Closing Dates", "due": "Oct 16", "dueDate": "2026-10-16", "endDate": "2026-10-16", "day": "Friday"},
+  {"status": "Not yet started", "name": "Support Cost Allocation (CAL)", "cat": "CAL", "owner": "FRSC", "section": "Year-End Closing", "due": "Oct 17", "dueDate": "2026-10-17", "endDate": "2026-10-17", "day": "Saturday"},
+  {"status": "Not yet started", "name": "After CAL Entries (SCR Entries)", "cat": "CAL", "owner": "All", "section": "Year-End Closing", "due": "Oct 18–Oct 21", "dueDate": "2026-10-18", "endDate": "2026-10-21", "day": "Sunday"},
+  {"status": "Not yet started", "name": "Third preliminary GCGL distribution to GC, FO and SO", "cat": "GCGL Distribution", "owner": "GFSC - FD&C", "section": "Year-End Closing", "due": "Oct 20", "dueDate": "2026-10-20", "endDate": "2026-10-20", "day": "Tuesday"},
+  {"status": "Not yet started", "name": "Inform Datawarehouse Team to start extracting GCGL data by 9am", "cat": "GCGL Distribution", "owner": "GFSC - Corporate Accounting", "section": "Year-End Closing", "due": "Oct 20", "dueDate": "2026-10-20", "endDate": "2026-10-20", "day": "Tuesday"},
+  {"status": "Not yet started", "name": "Load the data in OLAP and send out GCGL reports", "cat": "GCGL Distribution", "owner": "GFSC - FD&C", "section": "Year-End Closing", "due": "Oct 20", "dueDate": "2026-10-20", "endDate": "2026-10-20", "day": "Tuesday"},
+  {"status": "Not yet started", "name": "3nd Preliminary Ledger Extract - FPRA-FO will run the Ledger Extracts and validate accounts", "cat": "FO Ledger Extract", "owner": "GFSC - FD&C", "section": "Year-End Closing", "due": "Oct 20", "dueDate": "2026-10-20", "endDate": "2026-10-20", "day": "Tuesday"},
+  {"status": "Not yet started", "name": "Datawarehouse to load FO data in OLAP", "cat": "FO Ledger Extract", "owner": "GFSC - FD&C", "section": "Year-End Closing", "due": "Oct 20", "dueDate": "2026-10-20", "endDate": "2026-10-20", "day": "Tuesday"},
+  {"status": "Not yet started", "name": "Load data in relation to GCFR (based on October 20 GCGL)", "cat": "GCFR", "owner": "GFSC - FD&C", "section": "Year-End Closing", "due": "Oct 20", "dueDate": "2026-10-20", "endDate": "2026-10-20", "day": "Tuesday"},
+  {"status": "Not yet started", "name": "Field Offices complete and post regular monthly FFR to Financial Reports database. This should be reviewed and approved by FO Finance Director and National Director with an electronic signature/approval.", "cat": "Field Financial Reports", "owner": "Field Offices", "section": "Year-End Closing", "due": "Oct 20–Oct 23", "dueDate": "2026-10-20", "endDate": "2026-10-23", "day": "Tuesday"},
+  {"status": "Not yet started", "name": "Distribution of GCFR based on October 20 special loading", "cat": "GCFR", "owner": "GFSC - FPRA- GC", "section": "Year-End Closing", "due": "Oct 21", "dueDate": "2026-10-21", "endDate": "2026-10-21", "day": "Wednesday"},
+  {"status": "Not yet started", "name": "FPRA-FO to validate accounts", "cat": "FO Ledger Extract", "owner": "GFSC - FPRA-FO", "section": "Year-End Closing", "due": "Oct 21", "dueDate": "2026-10-21", "endDate": "2026-10-21", "day": "Wednesday"},
+  {"status": "Not yet started", "name": "FPRA-FO to provide updated Direct Funding and Local Income reconciliation based on 3rd close figures", "cat": "FO Ledger Extract", "owner": "GFSC - FPRA-FO", "section": "Year-End Closing", "due": "Oct 21", "dueDate": "2026-10-21", "endDate": "2026-10-21", "day": "Wednesday"},
+  {"status": "Not yet started", "name": "FPRA-FO will upload to PBAS Year To Date Actual based on 3rd preliminary LE", "cat": "FO Ledger Extract", "owner": "GFSC - FPRA-FO", "section": "Year-End Closing", "due": "Oct 21", "dueDate": "2026-10-21", "endDate": "2026-10-21", "day": "Wednesday"},
+  {"status": "Not yet started", "name": "Third Funding Reconciliation due (a/c 300) based on third preliminary GCGL uploaded in the FFR Module in the new PBAS platform. Note: There should be no reconciling items.", "cat": "Funding Reconciliation", "owner": "Field Offices, Regional Offices & International Offices", "section": "Year-End Closing", "due": "Oct 21", "dueDate": "2026-10-21", "endDate": "2026-10-21", "day": "Wednesday"},
+  {"status": "Not yet started", "name": "FPRA-FO will issue validation reports to FO's & Regions based on the 3rd preliminary LE. Offices are expected to make corrections on their books.", "cat": "FO Ledger Extract", "owner": "GFSC - FPRA-FO", "section": "Year-End Closing", "due": "Oct 22", "dueDate": "2026-10-22", "endDate": "2026-10-22", "day": "Thursday"},
+  {"status": "Not yet started", "name": "Final Account Allocation", "cat": "Clearing", "owner": "Shared Services", "section": "Year-End Closing", "due": "Oct 22", "dueDate": "2026-10-22", "endDate": "2026-10-22", "day": "Thursday"},
+  {"status": "Not yet started", "name": "3zzz recon or Ledger A/B", "cat": "Reconciliation", "owner": "Program Finance", "section": "Year-End Closing", "due": "Oct 22", "dueDate": "2026-10-22", "endDate": "2026-10-22", "day": "Thursday"},
+  {"status": "Not yet started", "name": "NEPRF Entries", "cat": "NEPRF", "owner": "Program Finance", "section": "Year-End Closing", "due": "Oct 22", "dueDate": "2026-10-22", "endDate": "2026-10-22", "day": "Thursday"},
+  {"status": "Not yet started", "name": "PBAS Adjustment", "cat": "PBAS", "owner": "Program Finance", "section": "Year-End Closing", "due": "Oct 22", "dueDate": "2026-10-22", "endDate": "2026-10-22", "day": "Thursday"},
+  {"status": "Not yet started", "name": "Ensure FFR (SunSystem) Annual Budget amended with / same as or less than final FY26 PBAS’ Last Approved Commitment.", "cat": "PBAS", "owner": "Field Offices, Regional Offices & International Offices", "section": "Year-End Closing", "due": "Oct 22", "dueDate": "2026-10-22", "endDate": "2026-10-22", "day": "Thursday"},
+  {"status": "Not yet started", "name": "NEPRF Report", "cat": "NEPRF", "owner": "Program Finance", "section": "Year-End Closing", "due": "Oct 22", "dueDate": "2026-10-22", "endDate": "2026-10-22", "day": "Thursday"},
+  {"status": "Not yet started", "name": "<new> GC Corporate Accounting (c/o Irene Jeyamalar) to send GC Local income report to FPRA-SO", "cat": "GCGL Distribution", "owner": "GFSC - Corporate Accounting", "section": "Year-End Closing", "due": "Oct 23", "dueDate": "2026-10-23", "endDate": "2026-10-23", "day": "Friday"},
+  {"status": "Not yet started", "name": "Generate Financial Reports & posting to FFR DB", "cat": "Field Financial Reports", "owner": "Shared Services", "section": "Year-End Closing", "due": "Oct 23", "dueDate": "2026-10-23", "endDate": "2026-10-23", "day": "Friday"},
+  {"status": "Not yet started", "name": "Post Item (A) - Prefunding to next year's Programs and ensure that required journal entries (JEs) in Item A are made on FO books.", "cat": "Field Financial Reports", "owner": "Field Offices, Regional Offices & International Offices", "section": "Year-End Closing", "due": "Oct 23", "dueDate": "2026-10-23", "endDate": "2026-10-23", "day": "Friday"},
+  {"status": "Not yet started", "name": "Finish clean up and making commitments for local income, in the PBAS. FPRA-FO will freeze PBAS database. No changes can be made to FY26 Local Income Commitments after this.", "cat": "PBAS", "owner": "Field Offices, Regional Offices & International Offices", "section": "Year-End Closing", "due": "Oct 23", "dueDate": "2026-10-23", "endDate": "2026-10-23", "day": "Friday"},
+  {"status": "Not yet started", "name": "SO September FY26 Financial Report (Final) post to the FFR Module in the new PBAS platform. (FPRA-SO contact is Joie de Asis)", "cat": "SO Financial Report", "owner": "Support Offices", "section": "Year-End Closing", "due": "Oct 23", "dueDate": "2026-10-23", "endDate": "2026-10-23", "day": "Friday"},
+  {"status": "Not yet started", "name": "SunSystems Period Lock for FY26", "cat": "SunSystems", "owner": "GFSC - FPRA-FO", "section": "Year-End Closing", "due": "Oct 24", "dueDate": "2026-10-24", "endDate": "2026-10-24", "day": "Saturday"},
+  {"status": "Not yet started", "name": "Final Ledger Extract - FPRA-FO will run the Ledger Extracts and validate accounts", "cat": "FO Ledger Extract", "owner": "GFSC - FPRA-FO", "section": "Year-End Closing", "due": "Oct 24", "dueDate": "2026-10-24", "endDate": "2026-10-24", "day": "Saturday"},
+  {"status": "Not yet started", "name": "Datawarehouse to load FO data in OLAP", "cat": "FO Ledger Extract", "owner": "GFSC - FD&C", "section": "Year-End Closing", "due": "Oct 24", "dueDate": "2026-10-24", "endDate": "2026-10-24", "day": "Saturday"},
+  {"status": "Not yet started", "name": "FPRA-FO to validate accounts", "cat": "FO Ledger Extract", "owner": "GFSC - FPRA-FO", "section": "Year-End Closing", "due": "Oct 26", "dueDate": "2026-10-26", "endDate": "2026-10-26", "day": "Monday"},
+  {"status": "Not yet started", "name": "Final loading of year-to-date actual expenses in PBAS", "cat": "PBAS", "owner": "GFSC - FPRA-FO", "section": "Year-End Closing", "due": "Oct 26", "dueDate": "2026-10-26", "endDate": "2026-10-26", "day": "Monday"},
+  {"status": "Not yet started", "name": "Review FOs FFR by RFD/FPRA-FO/Corporate Accounting including validation of actuals in PBAS", "cat": "Field Financial Reports", "owner": "Regional Offices & International Offices", "section": "Year-End Closing", "due": "Oct 26–Nov 2", "dueDate": "2026-10-26", "endDate": "2026-11-02", "day": "Monday"},
+  {"status": "Not yet started", "name": "Review ROs FFR by Global Finance Engagement/FPRA-FO/Corporate Accounting including validation of actuals in PBAS", "cat": "RO Financial Reports", "owner": "Global Engagement", "section": "Year-End Closing", "due": "Oct 26–Nov 2", "dueDate": "2026-10-26", "endDate": "2026-11-02", "day": "Monday"},
+  {"status": "Not yet started", "name": "Special loading and distribution of GCGL to offices with changes from October 22 GCGL", "cat": "GCGL Distribution", "owner": "GFSC - FD&C", "section": "Year-End Closing", "due": "Oct 27", "dueDate": "2026-10-27", "endDate": "2026-10-27", "day": "Tuesday"},
+  {"status": "Not yet started", "name": "Inform Datawarehouse Team to start extracting GCGL data by 9am", "cat": "GCGL Distribution", "owner": "GFSC - Corporate Accounting", "section": "Year-End Closing", "due": "Oct 27", "dueDate": "2026-10-27", "endDate": "2026-10-27", "day": "Tuesday"},
+  {"status": "Not yet started", "name": "Load the data in OLAP and send out GCGL reports", "cat": "GCGL Distribution", "owner": "GFSC - FD&C", "section": "Year-End Closing", "due": "Oct 27", "dueDate": "2026-10-27", "endDate": "2026-10-27", "day": "Tuesday"},
+  {"status": "Not yet started", "name": "Load data in relation to GCFR (based on October 27 GCGL)", "cat": "GCFR", "owner": "GFSC - FD&C", "section": "Year-End Closing", "due": "Oct 27", "dueDate": "2026-10-27", "endDate": "2026-10-27", "day": "Tuesday"},
+  {"status": "Not yet started", "name": "RO's to give email confirmation on the status of carryforward based on the PBI report released", "cat": "PBAS", "owner": "Field Offices, Regional Offices & International Offices", "section": "Year-End Closing", "due": "Oct 27–Nov 13", "dueDate": "2026-10-27", "endDate": "2026-11-13", "day": "Tuesday"},
+  {"status": "Not yet started", "name": "Distribution of GCFR based on October 27 special loading", "cat": "GCFR", "owner": "GFSC - FPRA- GC", "section": "Year-End Closing", "due": "Oct 28", "dueDate": "2026-10-28", "endDate": "2026-10-28", "day": "Wednesday"},
+  {"status": "Not yet started", "name": "Preliminary funding reconciliation between SO financial reports to PBAS, also reconcile to Corporate Accounting numbers. To be communicated by FPRA-SO (Joie de Asis) to PBAS (Sarah Dela Viga), and Corporate Accounting (Kathleen Sarmiento, John David Belandres).", "cat": "SO Financial Report", "owner": "GFSC - FPRA- SO", "section": "Year-End Closing", "due": "Oct 28", "dueDate": "2026-10-28", "endDate": "2026-10-28", "day": "Wednesday"},
+  {"status": "Not yet started", "name": "FPRA-FO to provide updated Direct Income reconciliation. Note: There should be no variances between GCGL, PBAS and FO ledger balances.", "cat": "Funding Reconciliation", "owner": "GFSC - FPRA-FO", "section": "Year-End Closing", "due": "Oct 28", "dueDate": "2026-10-28", "endDate": "2026-10-28", "day": "Wednesday"},
+  {"status": "Not yet started", "name": "FPRA-FO will issue validation reports to FO's & Regions based on the 3rd preliminary LE. Offices are expected to make corrections on their books.", "cat": "Funding Reconciliation", "owner": "GFSC - FPRA-FO", "section": "Year-End Closing", "due": "Oct 28", "dueDate": "2026-10-28", "endDate": "2026-10-28", "day": "Wednesday"},
+  {"status": "Not yet started", "name": "1st Special Ledger Extract - FPRA-FO will run the Ledger Extracts and validate accounts", "cat": "FO Ledger Extract", "owner": "GFSC - FD&C", "section": "Year-End Closing", "due": "Oct 28", "dueDate": "2026-10-28", "endDate": "2026-10-28", "day": "Wednesday"},
+  {"status": "Not yet started", "name": "Datawarehouse to load FO data in OLAP", "cat": "FO Ledger Extract", "owner": "GFSC - FD&C", "section": "Year-End Closing", "due": "Oct 28", "dueDate": "2026-10-28", "endDate": "2026-10-28", "day": "Wednesday"},
+  {"status": "Not yet started", "name": "FPRA-FO to validate accounts", "cat": "FO Ledger Extract", "owner": "GFSC - FPRA-FO", "section": "Year-End Closing", "due": "Oct 28", "dueDate": "2026-10-28", "endDate": "2026-10-28", "day": "Wednesday"},
+  {"status": "Not yet started", "name": "Send Fragile Contexts Strategy Fund (FCSF) Template to field offices", "cat": "Carryforward", "owner": "GFSC - FPRA- GC", "section": "Carryforward Action", "due": "Oct 28", "dueDate": "2026-10-28", "endDate": "2026-10-28", "day": "Wednesday"},
+  {"status": "Not yet started", "name": "Send to Corporate Accounting entries for Joining Forces (Cost Center under Advocacy) Adjustment", "cat": "Accruals", "owner": "GFSC - FPRA- GC", "section": "Year-End Closing", "due": "Oct 29", "dueDate": "2026-10-29", "endDate": "2026-10-29", "day": "Thursday"},
+  {"status": "Not yet started", "name": "Final Close. Corporate Accounting to post entries until end of day. (GCMO, GCKL, EASO, SAPO, ASSC, GNVO, LCRO, SARO, MEEO, WARO, EARO, AREO) Note: FY26 Net Income closing and adjustment to clear out imbalance in GCO Trial balance should be posted by this date.", "cat": "GCGL Closing", "owner": "GFSC - Corporate Accounting , Regional Offices & International Offices", "section": "Year-End Closing", "due": "Nov 2", "dueDate": "2026-11-02", "endDate": "2026-11-02", "day": "Monday"},
+  {"status": "Not yet started", "name": "Post Audit Items - F, K, M, P, Q, R, S, U, V, Z, J and AA Aging Analysis (BS Accounts) Cover Letter (includes commentary on aging analysis)", "cat": "Field Financial Reports", "owner": "Field Offices, Regional Offices & International Offices", "section": "Year-End Closing", "due": "Nov 2", "dueDate": "2026-11-02", "endDate": "2026-11-02", "day": "Monday"},
+  {"status": "Not yet started", "name": "KPMG team arrives to begin interim test work Note: The date remains tentative and is subject to revision.", "cat": "Single Audit", "owner": "WVUS", "section": "Reporting/Audit", "due": "Nov 2", "dueDate": "2026-11-02", "endDate": "2026-11-02", "day": "Monday"},
+  {"status": "Not yet started", "name": "Send FINAL GCGL with journal entries in Item A. The only difference between this GL and the 3rd one are the entries related to Pre-funding.", "cat": "GCGL Distribution", "owner": "GFSC - FD&C", "section": "Year-End Closing", "due": "Nov 3", "dueDate": "2026-11-03", "endDate": "2026-11-03", "day": "Tuesday"},
+  {"status": "Not yet started", "name": "Inform Datawarehouse Team to start extracting GCGL data by 9am", "cat": "GCGL Distribution", "owner": "GFSC - Corporate Accounting", "section": "Year-End Closing", "due": "Nov 3", "dueDate": "2026-11-03", "endDate": "2026-11-03", "day": "Tuesday"},
+  {"status": "Not yet started", "name": "Load the data in OLAP and send out GCGL reports", "cat": "GCGL Distribution", "owner": "GFSC - FD&C", "section": "Year-End Closing", "due": "Nov 3", "dueDate": "2026-11-03", "endDate": "2026-11-03", "day": "Tuesday"},
+  {"status": "Not yet started", "name": "Load data in relation to GCFR", "cat": "GCFR", "owner": "GFSC - FD&C", "section": "Year-End Closing", "due": "Nov 3", "dueDate": "2026-11-03", "endDate": "2026-11-03", "day": "Tuesday"},
+  {"status": "Not yet started", "name": "Deadline for RFD approval of FO FFR in the FFR Module in the new PBAS platform", "cat": "Field Financial Reports", "owner": "Field Offices", "section": "Year-End Closing", "due": "Nov 3", "dueDate": "2026-11-03", "endDate": "2026-11-03", "day": "Tuesday"},
+  {"status": "Not yet started", "name": "Final GCFR", "cat": "GCFR", "owner": "GFSC - FPRA- GC", "section": "Year-End Closing", "due": "Nov 4", "dueDate": "2026-11-04", "endDate": "2026-11-04", "day": "Wednesday"},
+  {"status": "Not yet started", "name": "Send FINAL GCFR Notes: Ideally the only change is on Joining Forces Adjustment", "cat": "GCFR", "owner": "GFSC - FPRA- GC", "section": "Year-End Closing", "due": "Nov 4", "dueDate": "2026-11-04", "endDate": "2026-11-04", "day": "Wednesday"},
+  {"status": "Not yet started", "name": "<new> GC Accounting to send SO vs PBAS Report to FPRA-SO", "cat": "SO Financial Report", "owner": "GFSC - Corporate Accounting", "section": "Year-End Closing", "due": "Nov 4", "dueDate": "2026-11-04", "endDate": "2026-11-04", "day": "Wednesday"},
+  {"status": "Not yet started", "name": "Final Close for October FY27 reporting period. Corporate Accounting to post entries until end of day.", "cat": "GCGL Closing", "owner": "GFSC - Corporate Accounting", "section": "Ledger Activities After GC Final Close", "due": "Nov 4", "dueDate": "2026-11-04", "endDate": "2026-11-04", "day": "Wednesday"},
+  {"status": "Not yet started", "name": "Send October FY26 GCGL reports to offices", "cat": "GCGL Distribution", "owner": "GFSC - FD&C", "section": "Ledger Activities After GC Final Close", "due": "Nov 5", "dueDate": "2026-11-05", "endDate": "2026-11-05", "day": "Thursday"},
+  {"status": "Not yet started", "name": "Inform Datawarehouse Team to start extracting GCGL data by 9am", "cat": "GCGL Distribution", "owner": "GFSC - Corporate Accounting", "section": "Ledger Activities After GC Final Close", "due": "Nov 5", "dueDate": "2026-11-05", "endDate": "2026-11-05", "day": "Thursday"},
+  {"status": "Not yet started", "name": "Load the data in OLAP and send out GCGL reports", "cat": "GCGL Distribution", "owner": "GFSC - FD&C", "section": "Ledger Activities After GC Final Close", "due": "Nov 5", "dueDate": "2026-11-05", "endDate": "2026-11-05", "day": "Thursday"},
+  {"status": "Not yet started", "name": "Regional Offices and International Offices complete and post regular monthly FFR to the FFR Module in the new PBAS platform", "cat": "Field Financial Reports", "owner": "Regional Offices & International Offices", "section": "Year-End Closing", "due": "Nov 6", "dueDate": "2026-11-06", "endDate": "2026-11-06", "day": "Friday"},
+  {"status": "Not yet started", "name": "<new> GC Corporate Accounting (c/o Irene Jeyamalar) to send GC Local income report to FPRA-SO", "cat": "GCGL Distribution", "owner": "GFSC - Corporate Accounting", "section": "Year-End Closing", "due": "Nov 6", "dueDate": "2026-11-06", "endDate": "2026-11-06", "day": "Friday"},
+  {"status": "Not yet started", "name": "Parallel Organizations to upload completed template and related September 2026 financial statements in the FFR Module in the new PBAS platform under \"Parallel Organization\" report type in September 2026 period.", "cat": "Field Financial Reports", "owner": "Field Offices, Regional Offices & International Offices", "section": "Reporting/Audit", "due": "Nov 6", "dueDate": "2026-11-06", "endDate": "2026-11-06", "day": "Friday"},
+  {"status": "Not yet started", "name": "Load the data in OLAP and send out GCGL reports", "cat": "GCGL Distribution", "owner": "GFSC - FD&C", "section": "Ledger Activities After GC Final Close", "due": "Nov 9", "dueDate": "2026-11-09", "endDate": "2026-11-09", "day": "Monday"},
+  {"status": "Not yet started", "name": "SO FY27 Final Monthly Calendarized Budget post to the FFR Module in the new PBAS platform (FPRA-SO contact is Joie de Asis)", "cat": "SO Financial Report", "owner": "Support Offices", "section": "Year-End Closing", "due": "Nov 10", "dueDate": "2026-11-10", "endDate": "2026-11-10", "day": "Tuesday"},
+  {"status": "Not yet started", "name": "<new> GC Accounting to send Final SO summary report to FPRA-SO", "cat": "SO Financial Report", "owner": "GFSC - Corporate Accounting", "section": "Year-End Closing", "due": "Nov 11", "dueDate": "2026-11-11", "endDate": "2026-11-11", "day": "Wednesday"},
+  {"status": "Not yet started", "name": "Special loading and distribution of GCGL to offices with changes from November 5 GCGL", "cat": "GCGL Distribution", "owner": "GFSC - FD&C", "section": "Ledger Activities After GC Final Close", "due": "Nov 11", "dueDate": "2026-11-11", "endDate": "2026-11-11", "day": "Wednesday"},
+  {"status": "Not yet started", "name": "Deadline for Estelle's approval of RO FFR in the FFR Module in the new PBAS platform", "cat": "Field Financial Reports", "owner": "Regional Offices", "section": "Year-End Closing", "due": "Nov 13", "dueDate": "2026-11-13", "endDate": "2026-11-13", "day": "Friday"},
+  {"status": "Not yet started", "name": "GC Q4 Variance Explanations Only", "cat": "Carryforward", "owner": "GC Departments & Regional Offices", "section": "Carryforward Action", "due": "Nov 13", "dueDate": "2026-11-13", "endDate": "2026-11-13", "day": "Friday"},
+  {"status": "Not yet started", "name": "Core/Logframe Combined Financial Report or Donor Specific Financial Report", "cat": "Field Financial Reports", "owner": "GFSC - FPRA-FO", "section": "Year-End Closing", "due": "Nov 15", "dueDate": "2026-11-15", "endDate": "2026-11-15", "day": "Sunday"},
+  {"status": "Not yet started", "name": "Submit Yearend Fragile Contexts Strategy Fund (FCSF) Report to FPRA-GC", "cat": "Carryforward", "owner": "Field Offices, Regional Offices & International Offices", "section": "Carryforward Action", "due": "Nov 16", "dueDate": "2026-11-16", "endDate": "2026-11-16", "day": "Monday"},
+  {"status": "Not yet started", "name": "Special loading and distribution of GCGL to offices with changes from November 11 GCGL", "cat": "GCGL Distribution", "owner": "GFSC - FD&C", "section": "Ledger Activities After GC Final Close", "due": "Nov 17", "dueDate": "2026-11-17", "endDate": "2026-11-17", "day": "Tuesday"},
+  {"status": "Not yet started", "name": "Load the data in OLAP and send out GCGL reports", "cat": "GCGL Distribution", "owner": "GFSC - FD&C", "section": "Ledger Activities After GC Final Close", "due": "Nov 17", "dueDate": "2026-11-17", "endDate": "2026-11-17", "day": "Tuesday"},
+  {"status": "Not yet started", "name": "FPRA-FO will transfer/populate CF Proposed Request Data to CY+1 tab (FY26) provided that PBAS and FFR are 100% reconciled. Note: PBAS FY26 Actual Expenditure and Local Income commitments should equal to FFR (IA206 Income & Exp. Statement & IA209 Project Analysis Report).", "cat": "Carryforward", "owner": "GFSC - FPRA-FO", "section": "Carryforward Action", "due": "Nov 20", "dueDate": "2026-11-20", "endDate": "2026-11-20", "day": "Friday"},
+  {"status": "Not yet started", "name": "FPRA-FO PBAS group to transfer CF Data to CY+1 tab (FY27) - under Proposed CF Column / Approved CF Column", "cat": "Carryforward", "owner": "GFSC - FPRA-FO", "section": "Carryforward Action", "due": "Nov 20–Dec 4", "dueDate": "2026-11-20", "endDate": "2026-12-04", "day": "Friday"},
+  {"status": "Not yet started", "name": "Share year end report and recommendations to CAFO", "cat": "Carryforward", "owner": "GFSC - FPRA- GC", "section": "Carryforward Action", "due": "Nov 23", "dueDate": "2026-11-23", "endDate": "2026-11-23", "day": "Monday"},
+  {"status": "Not yet started", "name": "Special loading and distribution of GCGL to offices with changes from November 19 GCGL", "cat": "GCGL Distribution", "owner": "GFSC - FD&C", "section": "Ledger Activities After GC Final Close", "due": "Nov 23", "dueDate": "2026-11-23", "endDate": "2026-11-23", "day": "Monday"},
+  {"status": "Not yet started", "name": "Load the data in OLAP and send out GCGL reports", "cat": "GCGL Distribution", "owner": "GFSC - FD&C", "section": "Ledger Activities After GC Final Close", "due": "Nov 23", "dueDate": "2026-11-23", "endDate": "2026-11-23", "day": "Monday"},
+  {"status": "Not yet started", "name": "Corporate Accounting to request documents of sampled July to September FY26 expense transactions from selected Field Offices", "cat": "WVI Audit", "owner": "GFSC - Corporate Accounting", "section": "Reporting/Audit", "due": "Nov 23", "dueDate": "2026-11-23", "endDate": "2026-11-23", "day": "Monday"},
+  {"status": "Not yet started", "name": "Send out GC Final PBAS CF list for sending to FPRA-FO (PBAS team) including the GC PBAS reconciliation", "cat": "Carryforward", "owner": "GFSC - FPRA- GC", "section": "Carryforward Action", "due": "Nov 30", "dueDate": "2026-11-30", "endDate": "2026-11-30", "day": "Monday"},
+  {"status": "Not yet started", "name": "If the total amount of the revised Current-Year (FY26) Projects Budget at programme-level is over the total amount of FY26 SO approved commitment at area programme-level because of overestimated carryforwards, unplanned commitment reduction by the SOs, etc., create the 2nd Revised Current Year (FY26) Project Budget and start the 2nd workflow by 12-Dec-2026. Other than this, the 2nd revision is not required.", "cat": "Carryforward", "owner": "Field Offices, Regional Offices & International Offices", "section": "Carryforward Action", "due": "Dec 9", "dueDate": "2026-12-09", "endDate": "2026-12-09", "day": "Wednesday"},
+  {"status": "Not yet started", "name": "ESCALATION - Unresolved issues between SO & FO will be referred to RO and GFO as necessary.", "cat": "Carryforward", "owner": "All offices and departments", "section": "Carryforward Action", "due": "Dec 9–Mar 26", "dueDate": "2026-12-09", "endDate": "2027-03-26", "day": "Wednesday"},
+  {"status": "Not yet started", "name": "Post Audit Item AB to the FFR Module in the new PBAS platform", "cat": "Field Financial Reports", "owner": "Field Offices, Regional Offices & International Offices", "section": "Year-End Closing", "due": "Dec 11", "dueDate": "2026-12-11", "endDate": "2026-12-11", "day": "Friday"},
+  {"status": "Not yet started", "name": "Selected Field Offices to provide documents of sampled July to September FY26 expense transactions", "cat": "WVI Audit", "owner": "Field Offices, Regional Offices & International Offices", "section": "Reporting/Audit", "due": "Dec 11", "dueDate": "2026-12-11", "endDate": "2026-12-11", "day": "Friday"},
+  {"status": "Not yet started", "name": "Global Assurance and Advisory team to start testing procedure on selected FY26 expense transactions", "cat": "WVI Audit", "owner": "Global Internal Audit", "section": "Reporting/Audit", "due": "Dec 14–Jan 15", "dueDate": "2026-12-14", "endDate": "2027-01-15", "day": "Monday"},
+  {"status": "Not yet started", "name": "Selected Field Offices to submit complete Local Grants Questionnaire", "cat": "WVI Audit", "owner": "Field Offices, Regional Offices & International Offices", "section": "Reporting/Audit", "due": "Dec 18", "dueDate": "2026-12-18", "endDate": "2026-12-18", "day": "Friday"},
+  {"status": "Not yet started", "name": "Selected Field Offices to provide documents of the internal expense testing samples", "cat": "WVI Audit", "owner": "Field Offices, Regional Offices & International Offices", "section": "Reporting/Audit", "due": "Dec 18–Jan 8", "dueDate": "2026-12-18", "endDate": "2027-01-08", "day": "Friday"},
+  {"status": "Not yet started", "name": "PBAS Fiscal Year switch to FY2027", "cat": "PBAS", "owner": "GFSC - FPRA-FO", "section": "Year-End Closing", "due": "Dec 21", "dueDate": "2026-12-21", "endDate": "2026-12-21", "day": "Monday"},
+  {"status": "Not yet started", "name": "Selected Field Offices to provide documents of sampled October and November FY26 expense transactions", "cat": "WVI Audit", "owner": "Field Offices, Regional Offices & International Offices", "section": "Reporting/Audit", "due": "Jan 4", "dueDate": "2027-01-04", "endDate": "2027-01-04", "day": "Monday"},
+  {"status": "Not yet started", "name": "Field Offices to provide documents as requested for audit testing on Local Revenue, Inventory, Cash and Investments, Prepayments, Local Grants, and WFP Revenue", "cat": "WVI Audit", "owner": "Field Offices, Regional Offices & International Offices", "section": "Reporting/Audit", "due": "Jan 4–Jan 22", "dueDate": "2027-01-04", "endDate": "2027-01-22", "day": "Monday"},
+  {"status": "Not yet started", "name": "SSC team to start testing procedure on selected internal expense testing samples", "cat": "WVI Audit", "owner": "Field Offices, Regional Offices & International Offices", "section": "Reporting/Audit", "due": "Jan 11", "dueDate": "2027-01-11", "endDate": "2027-01-11", "day": "Monday"},
+  {"status": "Not yet started", "name": "SO Audited FY26 Financial Report and Audited FY26 Balance Sheet - post to the FFR Module in the new PBAS platform (FPRA-SO Contact is Joie de Asis)", "cat": "SO Financial Report", "owner": "Support Offices", "section": "Year-End Closing", "due": "Jan 12", "dueDate": "2027-01-12", "endDate": "2027-01-12", "day": "Tuesday"},
+  {"status": "Not yet started", "name": "Final funding reconciliation based on SO Audited financial reports reconciled to PBAS, and to Corporate Accounting numbers. To be communicated by FPRA-SO (Joie de Asis) to PBAS (Sarah Dela Viga) and Corporate Accounting (Kathleen Samiento, John David Belandres).", "cat": "Funding Reconciliation", "owner": "GFSC - FPRA- SO", "section": "Year-End Closing", "due": "Jan 15", "dueDate": "2027-01-15", "endDate": "2027-01-15", "day": "Friday"},
+  {"status": "Not yet started", "name": "Corporate Accounting to submit consolidated financial statements for review of KPMG", "cat": "WVI Audit", "owner": "GFSC - Corporate Accounting", "section": "Reporting/Audit", "due": "Jan 29", "dueDate": "2027-01-29", "endDate": "2027-01-29", "day": "Friday"},
+  {"status": "Not yet started", "name": "Submit audit results' pre-read for the Audit and Risk Committee March 2027 meeting", "cat": "WVI Audit", "owner": "GFSC - Corporate Accounting", "section": "Reporting/Audit", "due": "Mar 11", "dueDate": "2027-03-11", "endDate": "2027-03-11", "day": "Thursday"},
+  {"status": "Not yet started", "name": "Deadline for SOs to inform all FO about their final decision related to carryforward from FY26.", "cat": "Carryforward", "owner": "Support Offices", "section": "Carryforward Action", "due": "Mar 26", "dueDate": "2027-03-26", "endDate": "2027-03-26", "day": "Friday"},
+  {"status": "Not yet started", "name": "Revised CY budget must be created absorbing the estimated and conservative carryforwards. The following requirements apply typically to sponsorship funded Programme/Projects. A) The total Revised FY26 Budget of all projects within the same area programme must be same or less than the FY26 SO approved commitment including carryforwards at area programme-level. B) Up to 20% of the SO agreed FY26 budget in Multi-Year Project Budget, budget reallocation between projects under the same area programme is acceptable.", "cat": "Carryforward", "owner": "Field Offices, Regional Offices & International Offices", "section": "Carryforward Action", "due": "Jul 23", "dueDate": "2027-07-23", "endDate": "2027-07-23", "day": "Friday"}
+];
+
+
+const today = new Date(); today.setHours(0,0,0,0);
+const todayStr = today.toISOString().slice(0,10);
+const MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+function fmtFull(iso){const [y,m,d]=iso.split('-').map(Number);return `${MON[m-1]} ${d}, ${y}`;}
+function fmtMon(iso){const [y,m]=iso.split('-').map(Number);return `${MON[m-1]} ${String(y).slice(2)}`;}
+
+// Section styling
+const sectionColors={
+  'Year-End Closing':{bg:'#FDF0E6',fg:'#B85C10'},
+  'Reporting/Audit':{bg:'#E6ECFF',fg:'#003399'},
+  'Carryforward Action':{bg:'#E1F5EE',fg:'#0A5C44'},
+  'Support Offices with Early Closing Dates':{bg:'#FDF3DC',fg:'#8A5A0F'},
+  'Ledger Activities After GC Final Close':{bg:'#EEF2FF',fg:'#3730A3'}
+};
+function secStyle(s){return sectionColors[s]||{bg:'var(--surface2)',fg:'var(--text-secondary)'};}
+
+const keyMarkers=['Soft Close','First Preliminary Close','Second Preliminary Close','Third Preliminary Close','Final Close','DPC CAL (Cluster','Support Cost Allocation (CAL)','SunSystems Period Lock','PBAS Fiscal Year switch'];
+function isKey(t){return keyMarkers.some(k=>t.name.indexOf(k)!==-1);}
+
+// Countdown / summary banner
+const banner=document.getElementById('countdown-banner');
+const upcoming=tasks.filter(t=>t.status!=='Completed'&&t.dueDate>=todayStr).sort((a,b)=>a.dueDate<b.dueDate?-1:1);
+const datesAll=tasks.map(t=>t.dueDate).sort();
+const spanTxt=`${fmtFull(datesAll[0])} \u2013 ${fmtFull(datesAll[datesAll.length-1])}`;
+if(upcoming.length){
+  const np=upcoming[0];
+  const nd=new Date(np.dueDate);nd.setHours(0,0,0,0);
+  const diff=Math.round((nd-today)/(1000*60*60*24));
+  const label=diff===0?'today':diff===1?'tomorrow':'in '+diff+' days';
+  banner.innerHTML=`<div class="countdown-banner">
+    <span style="font-size:18px;">\uD83D\uDDD3\uFE0F</span>
+    <div><div class="countdown-text">Next milestone: ${np.due} \u2014 ${label}</div>
+    <div class="countdown-sub">${np.name} \u00B7 ${np.owner}</div></div></div>`;
+} else {
+  banner.innerHTML=`<div class="countdown-banner">
+    <span style="font-size:18px;">\uD83D\uDCC5</span>
+    <div><div class="countdown-text">FY2026 Year-End Closing &amp; Reporting cycle \u00B7 ${tasks.length} activities</div>
+    <div class="countdown-sub">Reference calendar \u00B7 ${spanTxt} \u00B7 update statuses as activities are completed</div></div></div>`;
+}
+
+// Metrics
+const total=tasks.length,done=tasks.filter(t=>t.status==='Completed').length;
+const inProg=tasks.filter(t=>t.status==='In progress').length,pending=tasks.filter(t=>t.status==='Not yet started').length;
+const pct=Math.round(done/total*100);
+document.getElementById('metrics').innerHTML=`
+  <div class="metric-card" data-status="All" onclick="filterByStatus('All')" title="Show all activities"><div class="metric-label">Total activities</div><div class="metric-value">${total}</div><div class="metric-sub">FY26 year-end cycle</div><div class="prog-bar"><div class="prog-fill" style="width:100%;background:#D3D1C7"></div></div></div>
+  <div class="metric-card" data-status="Completed" onclick="filterByStatus('Completed')" title="Show completed activities"><div class="metric-label">Completed</div><div class="metric-value" style="color:var(--green)">${done}</div><div class="metric-sub">${pct}% of total</div><div class="prog-bar"><div class="prog-fill" style="width:${pct}%;background:var(--green)"></div></div></div>
+  <div class="metric-card" data-status="In progress" onclick="filterByStatus('In progress')" title="Show in-progress activities"><div class="metric-label">In progress</div><div class="metric-value" style="color:var(--wvi-orange)">${inProg}</div><div class="metric-sub">Currently active</div><div class="prog-bar"><div class="prog-fill" style="width:${Math.round(inProg/total*100)}%;background:var(--wvi-orange)"></div></div></div>
+  <div class="metric-card" data-status="Not yet started" onclick="filterByStatus('Not yet started')" title="Show pending activities"><div class="metric-label">Pending</div><div class="metric-value">${pending}</div><div class="metric-sub">Not yet started</div><div class="prog-bar"><div class="prog-fill" style="width:${Math.round(pending/total*100)}%;background:#B4B2A9"></div></div></div>`;
+
+// Owner chart (top 9)
+const ownerCounts={};
+tasks.forEach(t=>{ownerCounts[t.owner]=(ownerCounts[t.owner]||0)+1;});
+const sortedOwners=Object.entries(ownerCounts).sort((a,b)=>b[1]-a[1]);
+const topOwners=sortedOwners.slice(0,9);
+const maxOwner=topOwners[0][1];
+const barColors=['#E87722','#003399','#1D9E75','#5DCAA5','#D85A30','#378ADD','#BA7517','#639922','#8B4FA6','#C0392B','#0A7B8C','#A65F3E'];
+const ownerColorMap={};
+sortedOwners.forEach(([o],i)=>{ownerColorMap[o]=barColors[i%barColors.length];});
+document.getElementById('owner-list').innerHTML=topOwners.map(([o,c],i)=>`
+  <div class="owner-row" onclick="filterByOwner('${o.replace(/'/g,"\\'")}')">
+    <span class="owner-name" title="${o}">${o}</span>
+    <div class="owner-bar-bg"><div class="owner-bar" style="width:${Math.round(c/maxOwner*100)}%;background:${ownerColorMap[o]}"></div></div>
+    <span class="owner-count">${c}</span>
+  </div>`).join('');
+
+// Month chart
+const monthGroups={};
+tasks.forEach(t=>{const k=t.dueDate.slice(0,7);monthGroups[k]=monthGroups[k]||{done:0,total:0};monthGroups[k].total++;if(t.status==='Completed')monthGroups[k].done++;});
+const mKeys=Object.keys(monthGroups).sort();
+new Chart(document.getElementById('monthChart'),{
+  type:'bar',
+  data:{labels:mKeys.map(fmtMon),datasets:[
+    {label:'Completed',data:mKeys.map(k=>monthGroups[k].done),backgroundColor:'#1D9E75'},
+    {label:'Remaining',data:mKeys.map(k=>monthGroups[k].total-monthGroups[k].done),backgroundColor:'#E8E5DF'}
+  ]},
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
+    scales:{x:{stacked:true,ticks:{font:{size:9.5},color:'#9E9B96'},grid:{display:false}},
+            y:{stacked:true,ticks:{font:{size:10},color:'#9E9B96'},grid:{color:'rgba(0,0,0,0.05)'}}}}
+});
+
+// Filters
+let activeStatus='All',activeOwner='All',activeSection='All';
+const statuses=['All','Completed','In progress','Not yet started'];
+const sections=['All',...Object.keys(sectionColors).filter(s=>tasks.some(t=>t.section===s))];
+const owners=['All',...sortedOwners.map(([o])=>o)];
+const statusEl=document.getElementById('status-filters');
+const sectionEl=document.getElementById('section-filters');
+const ownerEl=document.getElementById('owner-filters');
+statusEl.innerHTML=statuses.map(s=>`<button class="filter-btn${s==='All'?' active':''}" data-s="${s}">${s}</button>`).join('');
+const secShort={'Year-End Closing':'Year-End Closing','Reporting/Audit':'Reporting / Audit','Carryforward Action':'Carryforward','Support Offices with Early Closing Dates':'SO Early Close','Ledger Activities After GC Final Close':'Post Final Close'};
+sectionEl.innerHTML=sections.map(s=>`<button class="filter-btn${s==='All'?' active':''}" data-sec="${s}">${s==='All'?'All':(secShort[s]||s)}</button>`).join('');
+ownerEl.innerHTML=owners.map(o=>`<button class="filter-btn${o==='All'?' active':''}" data-o="${o}">${o!=='All'?`<span style="width:7px;height:7px;border-radius:50%;background:${ownerColorMap[o]};display:inline-block;flex-shrink:0"></span>`:''}${o}</button>`).join('');
+
+statusEl.querySelectorAll('.filter-btn').forEach(btn=>{btn.onclick=()=>{activeStatus=btn.dataset.s;statusEl.querySelectorAll('.filter-btn').forEach(b=>b.classList.toggle('active',b.dataset.s===activeStatus));document.querySelectorAll('.metric-card').forEach(c=>c.classList.toggle('metric-active',activeStatus!=='All'&&c.dataset.status===activeStatus));expandForFilter();renderTimeline();};});
+sectionEl.querySelectorAll('.filter-btn').forEach(btn=>{btn.onclick=()=>{activeSection=btn.dataset.sec;sectionEl.querySelectorAll('.filter-btn').forEach(b=>b.classList.toggle('active',b.dataset.sec===activeSection));expandForFilter();renderTimeline();};});
+ownerEl.querySelectorAll('.filter-btn').forEach(btn=>{btn.onclick=()=>{activeOwner=btn.dataset.o;ownerEl.querySelectorAll('.filter-btn').forEach(b=>{const on=b.dataset.o===activeOwner;b.classList.toggle('active',on);if(on&&b.dataset.o!=='All')b.style.cssText=`background:${ownerColorMap[b.dataset.o]};border-color:${ownerColorMap[b.dataset.o]};color:#fff`;else if(b.dataset.o!=='All')b.style.cssText='';});expandForFilter();renderTimeline();};});
+
+const collapseState={};
+function anyFilterActive(){return activeStatus!=='All'||activeOwner!=='All'||activeSection!=='All';}
+function expandForFilter(){ if(anyFilterActive()){ Object.keys(collapseState).forEach(k=>collapseState[k]=false);} }
+function filterByStatus(s){activeStatus=(activeStatus===s&&s!=='All')?'All':s;statusEl.querySelectorAll('.filter-btn').forEach(b=>b.classList.toggle('active',b.dataset.s===activeStatus));document.querySelectorAll('.metric-card').forEach(c=>c.classList.toggle('metric-active',activeStatus!=='All'&&c.dataset.status===activeStatus));expandForFilter();renderTimeline();setTimeout(()=>document.querySelector('.timeline-card').scrollIntoView({behavior:'smooth',block:'start'}),50);}
+function filterByOwner(owner){activeOwner=activeOwner===owner?'All':owner;ownerEl.querySelectorAll('.filter-btn').forEach(b=>{const on=b.dataset.o===activeOwner;b.classList.toggle('active',on);if(on&&b.dataset.o!=='All')b.style.cssText=`background:${ownerColorMap[b.dataset.o]};border-color:${ownerColorMap[b.dataset.o]};color:#fff`;else if(b.dataset.o!=='All')b.style.cssText='';});expandForFilter();renderTimeline();document.querySelector('.filter-bar').scrollIntoView({behavior:'smooth',block:'start'});}
+function expandAll(){Object.keys(collapseState).forEach(k=>{collapseState[k]=false;});}
+
+function renderTimeline(){
+  let filtered=tasks;
+  if(activeStatus!=='All') filtered=filtered.filter(t=>t.status===activeStatus);
+  if(activeOwner!=='All') filtered=filtered.filter(t=>t.owner===activeOwner);
+  if(activeSection!=='All') filtered=filtered.filter(t=>t.section===activeSection);
+  const groups={};
+  filtered.forEach(t=>{ (groups[t.dueDate]=groups[t.dueDate]||[]).push(t); });
+  const tl=document.getElementById('timeline');
+  tl.innerHTML='';
+  if(!filtered.length){tl.innerHTML='<div class="empty-state">No activities match this filter.</div>';return;}
+  const keys=Object.keys(groups).sort();
+  keys.forEach(g=>{
+    const ts=groups[g];
+    const allDone=ts.every(t=>t.status==='Completed');
+    const anyProg=ts.some(t=>t.status==='In progress');
+    const dotCls=allDone?'dot-done':anyProg?'dot-prog':'dot-pend';
+    const isToday=g===todayStr;
+    if(collapseState[g]===undefined) collapseState[g]=!isToday;
+    const collapsed=collapseState[g];
+    const [yy,mm,dd]=g.split('-').map(Number);
+    const wd=ts[0].day;
+    const div=document.createElement('div');
+    div.className='day-group';
+    const hCls='day-header'+(isToday?' today-header':'');
+    const todayBadge=isToday?'<span class="today-badge">Today</span>':'';
+    div.innerHTML=`<div class="${hCls}">
+        <span class="day-dot ${dotCls}"></span>${wd} &middot; ${fmtFull(g)} <span class="day-count">&middot; ${ts.length} ${ts.length>1?'activities':'activity'}</span>${todayBadge}
+        <span class="chevron${collapsed?'':' open'}">\u25BE</span>
+      </div>
+      <div class="day-body${collapsed?' collapsed':''}">` +
+      ts.map(t=>{
+        const bCls=t.status==='Completed'?'badge-done':t.status==='In progress'?'badge-prog':'badge-pend';
+        const label=t.status==='Not yet started'?'Pending':t.status;
+        const dCls=t.status==='Completed'?'dot-done':t.status==='In progress'?'dot-prog':'dot-pend';
+        const rowCls='task-row'+(isKey(t)?' key-task':'');
+        const st=secStyle(t.section);
+        const secTag=`<span class="sec-tag" style="background:${st.bg};color:${st.fg}">${secShort[t.section]||t.section}</span>`;
+        return `<div class="${rowCls}">
+          <span class="status-dot ${dCls}"></span>
+          <span class="task-name">${t.name}<div class="task-tags">${secTag}</div></span>
+          <span class="task-owner">${t.owner}</span>
+          <span class="task-due">${t.due}</span>
+          <span class="task-cut">${t.cat}</span>
+          <span class="badge ${bCls}">${label}</span>
+        </div>`;
+      }).join('')+'</div>';
+    tl.appendChild(div);
+    div.querySelector('.day-header').addEventListener('click',()=>{
+      collapseState[g]=!collapseState[g];
+      div.querySelector('.day-body').classList.toggle('collapsed',collapseState[g]);
+      div.querySelector('.chevron').classList.toggle('open',!collapseState[g]);
+    });
+  });
+}
+renderTimeline();
+</script>
+</body>
+</html>
