@@ -63,6 +63,10 @@
   .filter-bar { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 12px 16px; margin-bottom: 1rem; display: flex; gap: 20px; flex-wrap: wrap; align-items: flex-start; }
   .filter-group { display: flex; flex-direction: column; gap: 6px; }
   .filter-group-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-tertiary); }
+  .cat-select { font-size: 12px; font-family: 'DM Sans', sans-serif; padding: 4px 28px 4px 12px; border-radius: 99px; border: 1px solid var(--border-strong); background: var(--surface); color: var(--text-secondary); cursor: pointer; height: 27px; max-width: 260px; appearance: none; -webkit-appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%236B6760' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 11px center; }
+  .cat-select:hover { background-color: var(--surface2); }
+  .cat-select.active { background-color: var(--wvi-orange); border-color: var(--wvi-orange); color: #fff; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E"); }
+  .cat-select option { color: var(--text-primary); background: var(--surface); }
   .filter-pills { display: flex; gap: 6px; flex-wrap: wrap; max-width: 100%; }
   .filter-btn { font-size: 12px; font-family: 'DM Sans', sans-serif; padding: 4px 12px; border-radius: 99px; border: 1px solid var(--border-strong); background: var(--surface); color: var(--text-secondary); cursor: pointer; transition: all 0.15s; white-space: nowrap; display: inline-flex; align-items: center; gap: 5px; }
   .filter-btn:hover { background: var(--surface2); }
@@ -172,6 +176,10 @@
       <div class="filter-group-label">Owner</div>
       <div class="filter-pills" id="owner-filters"></div>
     </div>
+    <div class="filter-group">
+      <div class="filter-group-label">Activity</div>
+      <select id="cat-filter" class="cat-select"></select>
+    </div>
   </div>
 
   <div class="timeline-card">
@@ -207,10 +215,10 @@ const tasks = [
   {"status": "Not yet started", "name": "Selected Field Offices to provide documents of sampled October to June FY26 expense transactions", "cat": "WVI Audit", "owner": "Field Offices, Regional Offices & International Offices", "section": "Reporting/Audit", "due": "Sep 11", "dueDate": "2026-09-11", "endDate": "2026-09-11", "day": "Friday"},
   {"status": "Not yet started", "name": "Sending of Initial Aging Analysis", "cat": "FFR", "owner": "Shared Services", "section": "Year-End Closing", "due": "Sep 11–Sep 12", "dueDate": "2026-09-11", "endDate": "2026-09-12", "day": "Friday"},
   {"status": "Not yet started", "name": "Sending of Accrual Template for Fy26 Closed Projects with Separated Staff to Program Finance and P&C", "cat": "LDR", "owner": "Payroll", "section": "Year-End Closing", "due": "Sep 12", "dueDate": "2026-09-12", "endDate": "2026-09-12", "day": "Saturday"},
-  {"status": "Not yet started", "name": "FY2026 YEAR END WE LEARN-SESSION 1 (ALL STAFF)", "cat": "Webinar", "owner": "All-PHLO", "section": "Year-End Closing", "due": "Sep 14", "dueDate": "2026-09-14", "endDate": "2026-09-14", "day": "Monday"},
+  {"status": "Not yet started", "name": "FY2026 YEAR END WE LEARN-SESSION 1 (ALL STAFF)", "cat": "Webinar", "owner": "All-PHLO", "section": "Year-End Closing", "due": "Sep 10", "dueDate": "2026-09-10", "endDate": "2026-09-10", "day": "Thursday"},
   {"status": "Not yet started", "name": "WVUS requests transaction support from Field Offices Note: The date remains tentative and is subject to revision.", "cat": "Single Audit", "owner": "WVUS", "section": "Reporting/Audit", "due": "Sep 14", "dueDate": "2026-09-14", "endDate": "2026-09-14", "day": "Monday"},
   {"status": "Not yet started", "name": "Receiving of advice/ request for payroll reclass- July and August 2026", "cat": "Payroll", "owner": "Payroll", "section": "Year-End Closing", "due": "Sep 14–Sep 15", "dueDate": "2026-09-14", "endDate": "2026-09-15", "day": "Monday"},
-  {"status": "Not yet started", "name": "FY2026 YEAR END WE LEARN- SESSION 2 (ALL STAFF)", "cat": "Webinar", "owner": "All-PHLO", "section": "Year-End Closing", "due": "Sep 14–Sep 15", "dueDate": "2026-09-14", "endDate": "2026-09-15", "day": "Monday"},
+  {"status": "Not yet started", "name": "FY2026 YEAR END WE LEARN- SESSION 2 (ALL STAFF)", "cat": "Webinar", "owner": "All-PHLO", "section": "Year-End Closing", "due": "Sep 14", "dueDate": "2026-09-14", "endDate": "2026-09-14", "day": "Monday"},
   {"status": "Not yet started", "name": "Send Outstanding Balance Sheet Accounts to PHLO All Finance for Clearing", "cat": "Clearing", "owner": "GL", "section": "Year-End Closing", "due": "Sep 15", "dueDate": "2026-09-15", "endDate": "2026-09-15", "day": "Tuesday"},
   {"status": "Not yet started", "name": "Send infoBoard reminder for SA related expenses cut off c/o Nors &Lyn", "cat": "SA", "owner": "AP", "section": "Year-End Closing", "due": "Sep 15", "dueDate": "2026-09-15", "endDate": "2026-09-15", "day": "Tuesday"},
   {"status": "Not yet started", "name": "Send infoboard guidance on Non-PO to All Staff c/o Lyn (what/who)", "cat": "ProVision", "owner": "AP", "section": "Year-End Closing", "due": "Sep 15", "dueDate": "2026-09-15", "endDate": "2026-09-15", "day": "Tuesday"},
@@ -220,7 +228,7 @@ const tasks = [
   {"status": "Not yet started", "name": "Submission of Non-PO Invoices/ Expenses payment request to be paid by September 30 Note: Invoices/ received on September 20 until October 3 will be accrued to be paid in October", "cat": "Provision", "owner": "All-PHLO", "section": "Year-End Closing", "due": "Sep 17", "dueDate": "2026-09-17", "endDate": "2026-09-17", "day": "Thursday"},
   {"status": "Not yet started", "name": "Accrual Confirmation for Fy26 Closed Projects with Separated Staff to Payroll (from Program Finance and P&C)", "cat": "LDR", "owner": "Payroll", "section": "Year-End Closing", "due": "Sep 18", "dueDate": "2026-09-18", "endDate": "2026-09-18", "day": "Friday"},
   {"status": "Not yet started", "name": "Early cut off day to submit Settlement Advice (SAs) related expenses : Concur-Liquidations, reimbursements ; Provision invoices and copy of invoices for accrual, Payroll related (UNTIL SEPTEMBER 18, 2026)", "cat": "SA", "owner": "AP", "section": "Year-End Closing", "due": "Sep 18–Sep 19", "dueDate": "2026-09-18", "endDate": "2026-09-19", "day": "Friday"},
-  {"status": "Not yet started", "name": "Utilities & Supplies covering Sep – Oct period and billing are to be received by Oct’26, submit estimated but reasonable amount to finance in-charge (Concur Related, Provision & Direct Payments)", "cat": "ProVision/Concur", "owner": "All", "section": "Year-End Closing", "due": "Sep 18–Sep 19", "dueDate": "2026-09-18", "endDate": "2026-09-19", "day": "Friday"},
+  {"status": "Not yet started", "name": "Utilities & Supplies covering Sep – Oct period and billing are to be received by Oct’26, submit estimated but reasonable amount to finance in-charge (Concur Related, Provision & Direct Payments)", "cat": "ProVision/Concur", "owner": "All-PHLO", "section": "Year-End Closing", "due": "Sep 18–Sep 19", "dueDate": "2026-09-18", "endDate": "2026-09-19", "day": "Friday"},
   {"status": "Not yet started", "name": "PF to send request/reminder to Direct funders to send funding until September 2, 2026", "cat": "ProVision/Concur", "owner": "Program Finance", "section": "Year-End Closing", "due": "Sep 18–Sep 19", "dueDate": "2026-09-18", "endDate": "2026-09-19", "day": "Friday"},
   {"status": "Not yet started", "name": "Special loading and distribution of GCGL to offices", "cat": "GCGL Distribution", "owner": "GFSC - FD&C", "section": "Year-End Closing", "due": "Sep 21", "dueDate": "2026-09-21", "endDate": "2026-09-21", "day": "Monday"},
   {"status": "Not yet started", "name": "Inform Datawarehouse Team to start extracting GCGL data by 9am", "cat": "GCGL Distribution", "owner": "GFSC - Corporate Accounting", "section": "Year-End Closing", "due": "Sep 21", "dueDate": "2026-09-21", "endDate": "2026-09-21", "day": "Monday"},
@@ -312,7 +320,7 @@ const tasks = [
   {"status": "Not yet started", "name": "Submit to Corporate Accounting all other adjusting entries affecting WV Ireland.", "cat": "SO Closing Date", "owner": "All offices and departments", "section": "Support Offices with Early Closing Dates", "due": "Oct 5", "dueDate": "2026-10-05", "endDate": "2026-10-05", "day": "Monday"},
   {"status": "Not yet started", "name": "Submit and approve all ICB, CHB and Non-WFP Invoices in Blackline affecting WV United States. Note: Tentative and maybe subject to changes", "cat": "SO Closing Date", "owner": "All offices and departments", "section": "Support Offices with Early Closing Dates", "due": "Oct 5", "dueDate": "2026-10-05", "endDate": "2026-10-05", "day": "Monday"},
   {"status": "Not yet started", "name": "Submit and approve all WFP and 5UN Invoices in Blackline affecting WV United States. Note: Tentative and maybe subject to changes", "cat": "SO Closing Date", "owner": "All offices and departments", "section": "Support Offices with Early Closing Dates", "due": "Oct 5", "dueDate": "2026-10-05", "endDate": "2026-10-05", "day": "Monday"},
-  {"status": "Not yet started", "name": "LDR submission for the month of October 2026", "cat": "LDR", "owner": "All", "section": "Year-End Closing", "due": "Oct 5–Oct 6", "dueDate": "2026-10-05", "endDate": "2026-10-06", "day": "Monday"},
+  {"status": "Not yet started", "name": "LDR submission for the month of October 2026", "cat": "LDR", "owner": "All-PHLO", "section": "Year-End Closing", "due": "Oct 5–Oct 6", "dueDate": "2026-10-05", "endDate": "2026-10-06", "day": "Monday"},
   {"status": "Not yet started", "name": "WFP SO Finance Hub to process transactions Note: WFP SO Finance Hub to process transactions for JPNO on October 8th", "cat": "WFP", "owner": "GFSC - FD&C", "section": "Year-End Closing", "due": "Oct 5–Oct 7", "dueDate": "2026-10-05", "endDate": "2026-10-07", "day": "Monday"},
   {"status": "Not yet started", "name": "Global Assurance and Advisory team to start testing procedure on selected FY26 expense transactions (Interim Testing)", "cat": "WVI Audit", "owner": "Global Internal Audit", "section": "Reporting/Audit", "due": "Oct 5–Oct 30", "dueDate": "2026-10-05", "endDate": "2026-10-30", "day": "Monday"},
   {"status": "Not yet started", "name": "Shared Service to submit to FPRA-GC proposed Provision accruals", "cat": "Accruals", "owner": "Shared Services", "section": "Year-End Closing", "due": "Oct 6", "dueDate": "2026-10-06", "endDate": "2026-10-06", "day": "Tuesday"},
@@ -321,7 +329,7 @@ const tasks = [
   {"status": "Not yet started", "name": "First Preliminary Close. Corporate Accounting to post entries until end of day.", "cat": "GCGL Closing", "owner": "GFSC - Corporate Accounting", "section": "Year-End Closing", "due": "Oct 6", "dueDate": "2026-10-06", "endDate": "2026-10-06", "day": "Tuesday"},
   {"status": "Not yet started", "name": "For field offices using ProVision: Deadline to confirm accrual entries", "cat": "ProVision", "owner": "Field Offices, Regional Offices & International Offices", "section": "Year-End Closing", "due": "Oct 6–Oct 8", "dueDate": "2026-10-06", "endDate": "2026-10-08", "day": "Tuesday"},
   {"status": "Not yet started", "name": "Daily reminder of unsettled concur expense reports", "cat": "Provision", "owner": "AP", "section": "Year-End Closing", "due": "Oct 7", "dueDate": "2026-10-07", "endDate": "2026-10-07", "day": "Wednesday"},
-  {"status": "Not yet started", "name": "Fy26 Annual LDR submission (TBD c/o Lej)", "cat": "LDR", "owner": "All", "section": "Year-End Closing", "due": "Oct 7", "dueDate": "2026-10-07", "endDate": "2026-10-07", "day": "Wednesday"},
+  {"status": "Not yet started", "name": "Fy26 Annual LDR submission (TBD c/o Lej)", "cat": "LDR", "owner": "All-PHLO", "section": "Year-End Closing", "due": "Oct 7", "dueDate": "2026-10-07", "endDate": "2026-10-07", "day": "Wednesday"},
   {"status": "Not yet started", "name": "Last day to send Item G (Purchased Inventory Listing) As of Sep 30", "cat": "FFR", "owner": "GL", "section": "Year-End Closing", "due": "Oct 7", "dueDate": "2026-10-07", "endDate": "2026-10-07", "day": "Wednesday"},
   {"status": "Not yet started", "name": "Account Analysis & sending of outstanding items", "cat": "Clearing", "owner": "GL", "section": "Year-End Closing", "due": "Oct 7", "dueDate": "2026-10-07", "endDate": "2026-10-07", "day": "Wednesday"},
   {"status": "Not yet started", "name": "Sending of Accrual Report by SSC", "cat": "Accruals", "owner": "Shared Services", "section": "Year-End Closing", "due": "Oct 7", "dueDate": "2026-10-07", "endDate": "2026-10-07", "day": "Wednesday"},
@@ -340,7 +348,7 @@ const tasks = [
   {"status": "Not yet started", "name": "WV Canada", "cat": "SO Closing Date", "owner": "All offices and departments", "section": "Support Offices with Early Closing Dates", "due": "Oct 7", "dueDate": "2026-10-07", "endDate": "2026-10-07", "day": "Wednesday"},
   {"status": "Not yet started", "name": "Submit to Corporate Accounting all GIK entries affecting WV Canada.", "cat": "SO Closing Date", "owner": "All offices and departments", "section": "Support Offices with Early Closing Dates", "due": "Oct 7", "dueDate": "2026-10-07", "endDate": "2026-10-07", "day": "Wednesday"},
   {"status": "Not yet started", "name": "Deadline to confirm 59098 Charging", "cat": "Accruals", "owner": "Shared Services", "section": "Year-End Closing", "due": "Oct 7–Oct 9", "dueDate": "2026-10-07", "endDate": "2026-10-09", "day": "Wednesday"},
-  {"status": "Not yet started", "name": "Direct Funding Reconciliation (Actual vs Bduget)", "cat": "PBAS", "owner": "All", "section": "Year-End Closing", "due": "Oct 8", "dueDate": "2026-10-08", "endDate": "2026-10-08", "day": "Thursday"},
+  {"status": "Not yet started", "name": "Direct Funding Reconciliation (Actual vs Bduget)", "cat": "PBAS", "owner": "All-PHLO", "section": "Year-End Closing", "due": "Oct 8", "dueDate": "2026-10-08", "endDate": "2026-10-08", "day": "Thursday"},
   {"status": "Not yet started", "name": "FPRA-FO to validate accounts", "cat": "FO Ledger Extract", "owner": "GFSC - FPRA-FO", "section": "Year-End Closing", "due": "Oct 8", "dueDate": "2026-10-08", "endDate": "2026-10-08", "day": "Thursday"},
   {"status": "Not yet started", "name": "FPRA-GC to review ProVision line items subject for accrual. Raise potential error on expense and prepaid line items.", "cat": "Accruals", "owner": "GFSC - FPRA- GC", "section": "Year-End Closing", "due": "Oct 8", "dueDate": "2026-10-08", "endDate": "2026-10-08", "day": "Thursday"},
   {"status": "Not yet started", "name": "First Funding Reconciliation due (a/c 300) based on first preliminary GCGL uploaded in the FFR Module in the new PBAS platform", "cat": "Funding Reconciliation", "owner": "Field Offices, Regional Offices & International Offices", "section": "Year-End Closing", "due": "Oct 8", "dueDate": "2026-10-08", "endDate": "2026-10-08", "day": "Thursday"},
@@ -411,7 +419,7 @@ const tasks = [
   {"status": "Not yet started", "name": "Third Preliminary Close. Last Chance to book any entries to the GCGL except for the Journal Entries in Item A that will be entered by GC in the 4th / Final GL. Finalize FFR based on Third preliminary GCGL.", "cat": "GCGL Closing", "owner": "GFSC - Corporate Accounting", "section": "Year-End Closing", "due": "Oct 16", "dueDate": "2026-10-16", "endDate": "2026-10-16", "day": "Friday"},
   {"status": "Not yet started", "name": "WV United States", "cat": "SO Closing Date", "owner": "All offices and departments", "section": "Support Offices with Early Closing Dates", "due": "Oct 16", "dueDate": "2026-10-16", "endDate": "2026-10-16", "day": "Friday"},
   {"status": "Not yet started", "name": "Support Cost Allocation (CAL)", "cat": "CAL", "owner": "FRSC", "section": "Year-End Closing", "due": "Oct 17", "dueDate": "2026-10-17", "endDate": "2026-10-17", "day": "Saturday"},
-  {"status": "Not yet started", "name": "After CAL Entries (SCR Entries)", "cat": "CAL", "owner": "All", "section": "Year-End Closing", "due": "Oct 18–Oct 21", "dueDate": "2026-10-18", "endDate": "2026-10-21", "day": "Sunday"},
+  {"status": "Not yet started", "name": "After CAL Entries (SCR Entries)", "cat": "CAL", "owner": "All-PHLO", "section": "Year-End Closing", "due": "Oct 18–Oct 21", "dueDate": "2026-10-18", "endDate": "2026-10-21", "day": "Sunday"},
   {"status": "Not yet started", "name": "Third preliminary GCGL distribution to GC, FO and SO", "cat": "GCGL Distribution", "owner": "GFSC - FD&C", "section": "Year-End Closing", "due": "Oct 20", "dueDate": "2026-10-20", "endDate": "2026-10-20", "day": "Tuesday"},
   {"status": "Not yet started", "name": "Inform Datawarehouse Team to start extracting GCGL data by 9am", "cat": "GCGL Distribution", "owner": "GFSC - Corporate Accounting", "section": "Year-End Closing", "due": "Oct 20", "dueDate": "2026-10-20", "endDate": "2026-10-20", "day": "Tuesday"},
   {"status": "Not yet started", "name": "Load the data in OLAP and send out GCGL reports", "cat": "GCGL Distribution", "owner": "GFSC - FD&C", "section": "Year-End Closing", "due": "Oct 20", "dueDate": "2026-10-20", "endDate": "2026-10-20", "day": "Tuesday"},
@@ -594,7 +602,7 @@ new Chart(document.getElementById('monthChart'),{
 });
 
 // Filters
-let activeStatus='All',activeOwner='All',activeSection='All';
+let activeStatus='All',activeOwners=new Set(),activeSection='All',activeCat='All';
 const statuses=['All','Completed','In progress','Not yet started'];
 const sections=['All',...Object.keys(sectionColors).filter(s=>tasks.some(t=>t.section===s))];
 const owners=['All',...sortedOwners.map(([o])=>o)];
@@ -608,20 +616,29 @@ ownerEl.innerHTML=owners.map(o=>`<button class="filter-btn${o==='All'?' active':
 
 statusEl.querySelectorAll('.filter-btn').forEach(btn=>{btn.onclick=()=>{activeStatus=btn.dataset.s;statusEl.querySelectorAll('.filter-btn').forEach(b=>b.classList.toggle('active',b.dataset.s===activeStatus));document.querySelectorAll('.metric-card').forEach(c=>c.classList.toggle('metric-active',activeStatus!=='All'&&c.dataset.status===activeStatus));expandForFilter();renderTimeline();};});
 sectionEl.querySelectorAll('.filter-btn').forEach(btn=>{btn.onclick=()=>{activeSection=btn.dataset.sec;sectionEl.querySelectorAll('.filter-btn').forEach(b=>b.classList.toggle('active',b.dataset.sec===activeSection));expandForFilter();renderTimeline();};});
-ownerEl.querySelectorAll('.filter-btn').forEach(btn=>{btn.onclick=()=>{activeOwner=btn.dataset.o;ownerEl.querySelectorAll('.filter-btn').forEach(b=>{const on=b.dataset.o===activeOwner;b.classList.toggle('active',on);if(on&&b.dataset.o!=='All')b.style.cssText=`background:${ownerColorMap[b.dataset.o]};border-color:${ownerColorMap[b.dataset.o]};color:#fff`;else if(b.dataset.o!=='All')b.style.cssText='';});expandForFilter();renderTimeline();};});
+function syncOwnerButtons(){ownerEl.querySelectorAll('.filter-btn').forEach(b=>{const o=b.dataset.o;const on=(o==='All')?activeOwners.size===0:activeOwners.has(o);b.classList.toggle('active',on);if(o!=='All'){b.style.cssText=on?`background:${ownerColorMap[o]};border-color:${ownerColorMap[o]};color:#fff`:'';}});}
+ownerEl.querySelectorAll('.filter-btn').forEach(btn=>{btn.onclick=()=>{const o=btn.dataset.o;if(o==='All'){activeOwners.clear();}else{if(activeOwners.has(o))activeOwners.delete(o);else activeOwners.add(o);}syncOwnerButtons();expandForFilter();renderTimeline();};});
+
+const catEl=document.getElementById('cat-filter');
+const catCounts={};
+tasks.forEach(t=>{const c=t.cat||'(none)';catCounts[c]=(catCounts[c]||0)+1;});
+const catList=Object.keys(catCounts).sort((a,b)=>a.toLowerCase()<b.toLowerCase()?-1:1);
+catEl.innerHTML=`<option value="All">All activities (${tasks.length})</option>`+catList.map(c=>`<option value="${c.replace(/"/g,'&quot;')}">${c} (${catCounts[c]})</option>`).join('');
+catEl.onchange=()=>{activeCat=catEl.value;catEl.classList.toggle('active',activeCat!=='All');expandForFilter();renderTimeline();};
 
 const collapseState={};
-function anyFilterActive(){return activeStatus!=='All'||activeOwner!=='All'||activeSection!=='All';}
+function anyFilterActive(){return activeStatus!=='All'||activeOwners.size>0||activeSection!=='All'||activeCat!=='All';}
 function expandForFilter(){ if(anyFilterActive()){ Object.keys(collapseState).forEach(k=>collapseState[k]=false);} }
 function filterByStatus(s){activeStatus=(activeStatus===s&&s!=='All')?'All':s;statusEl.querySelectorAll('.filter-btn').forEach(b=>b.classList.toggle('active',b.dataset.s===activeStatus));document.querySelectorAll('.metric-card').forEach(c=>c.classList.toggle('metric-active',activeStatus!=='All'&&c.dataset.status===activeStatus));expandForFilter();renderTimeline();setTimeout(()=>document.querySelector('.timeline-card').scrollIntoView({behavior:'smooth',block:'start'}),50);}
-function filterByOwner(owner){activeOwner=activeOwner===owner?'All':owner;ownerEl.querySelectorAll('.filter-btn').forEach(b=>{const on=b.dataset.o===activeOwner;b.classList.toggle('active',on);if(on&&b.dataset.o!=='All')b.style.cssText=`background:${ownerColorMap[b.dataset.o]};border-color:${ownerColorMap[b.dataset.o]};color:#fff`;else if(b.dataset.o!=='All')b.style.cssText='';});expandForFilter();renderTimeline();document.querySelector('.filter-bar').scrollIntoView({behavior:'smooth',block:'start'});}
+function filterByOwner(owner){if(activeOwners.has(owner))activeOwners.delete(owner);else activeOwners.add(owner);syncOwnerButtons();expandForFilter();renderTimeline();document.querySelector('.filter-bar').scrollIntoView({behavior:'smooth',block:'start'});}
 function expandAll(){Object.keys(collapseState).forEach(k=>{collapseState[k]=false;});}
 
 function renderTimeline(){
   let filtered=tasks;
   if(activeStatus!=='All') filtered=filtered.filter(t=>t.status===activeStatus);
-  if(activeOwner!=='All') filtered=filtered.filter(t=>t.owner===activeOwner);
+  if(activeOwners.size>0) filtered=filtered.filter(t=>activeOwners.has(t.owner));
   if(activeSection!=='All') filtered=filtered.filter(t=>t.section===activeSection);
+  if(activeCat!=='All') filtered=filtered.filter(t=>(t.cat||'(none)')===activeCat);
   const groups={};
   filtered.forEach(t=>{ (groups[t.dueDate]=groups[t.dueDate]||[]).push(t); });
   const tl=document.getElementById('timeline');
